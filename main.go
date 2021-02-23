@@ -77,7 +77,7 @@ func main() {
 				log.Printf("read random bytes failed: %v", err)
 				return
 			}
-			preimage := hex.EncodeToString(preimageBytes)
+			preimage := base64.StdEncoding.EncodeToString(preimageBytes)
 			difficulty := fmt.Sprintf(fmt.Sprintf("%%0%dd", difficultyLevel), 0)
 			challenge := Challenge{
 				Preimage:   preimage,
