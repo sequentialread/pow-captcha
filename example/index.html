@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>📋 Todo List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .captcha-container {
+      margin-top: 1em;
+      font-size: 10px;
+    }
+    li::marker {
+      font-size: 1.2em;
+    }
+    li {
+      font-size: 1em;
+    }
+    input[type='text'] {
+      width: 25em;
+    }
+  </style>
+</head>
+<body>
+  <h1>📋 Todo List</h1>
+  <ol>
+    {{ range $index, $item := .Items }}
+      <li>{{ $item }}</li>
+    {{ end }}
+      <li>
+        <form method="POST" action="/">
+          <input type="text" name="item" />
+          <input type="hidden" name="challenge" value="{{ .Challenge }}" />
+          <input type="hidden" name="nonce" />
+          <input type="submit" disabled="true" value="Add" />
+          <div class="captcha-container" 
+              data-sqr-captcha-url="{{ .CaptchaURL }}" 
+              data-sqr-captcha-challenge="{{ .Challenge }}" 
+              data-sqr-captcha-callback="myCaptchaCallback">
+         </div>
+        </form>
+
+      </li>
+  </ol>
+  <script>
+    window.myCaptchaCallback = (nonce) => {
+      document.querySelector("form input[name='nonce']").value = nonce;
+      document.querySelector("form input[type='submit']").disabled = false;
+    };
+  </script>
+  <script src="{{ .CaptchaURL }}/static/captcha.js"></script>
+</body>
+</html>

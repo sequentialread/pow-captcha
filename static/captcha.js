@@ -2,6 +2,10 @@
 
   const numberOfWebWorkersToCreate = 4;
 
+  window.sqrCaptchaReset = () => {
+    window.sqrCaptchaInitDone = false;
+  };
+
   window.sqrCaptchaInit = () => {
     if(window.sqrCaptchaInitDone) {
       console.error("sqrCaptchaInit was called twice!");
@@ -25,6 +29,23 @@
           url = url.substring(0, url.length-1)
         }
       }
+
+      if(!element.dataset.sqrCaptchaCallback) {
+        console.error("error: element with data-sqr-captcha-challenge property is missing the data-sqr-captcha-callback property");
+        return
+      }
+
+      if(typeof element.dataset.sqrCaptchaCallback != "string") {
+        console.error("error: data-sqr-captcha-callback property should be of type 'string'");
+        return
+      }
+
+      const callback = getCallbackFromGlobalNamespace(element.dataset.sqrCaptchaCallback);
+      if(!callback) {
+        console.warn(`warning: data-sqr-captcha-callback '${element.dataset.sqrCaptchaCallback}' `
+                     + "is not defined in the global namespace yet. It had better be defined by the time it's called!");
+      }
+      
   
       let form = null;
       let parent = element.parentElement;
@@ -41,9 +62,20 @@
         //todo
       }
 
-      renderCaptcha(element, url);
+      if(!document.querySelector(`link[href='${url}/static/captcha.css']`)) {
+        
+        const stylesheet = createElement(document.head, "link", {
+          "rel": "stylesheet",
+          "charset": "utf8",
+        });
+        stylesheet.onload = () => renderCaptcha(element);
+        stylesheet.setAttribute("href", `${url}/static/captcha.css`);
+      } else {
+        renderCaptcha(element);
+      }
   
       const onFormWasTouched = () => {
+        
         const challenge = element.dataset.sqrCaptchaChallenge;
         if(!challengesMap[challenge]) {
           challengesMap[challenge] = {
@@ -129,6 +161,7 @@
             const checkmark = element.querySelector(".sqr-checkmark-icon");
             const gears = element.querySelector(".sqr-gears-icon");
             const bestHashElement = element.querySelector(".sqr-captcha-best-hash");
+            const description = element.querySelector(".sqr-captcha-description");
             challengeState.smallestHash = e.data.smallestHash;
             bestHashElement.textContent = getHashProgressText(challengeState);
             bestHashElement.classList.add("sqr-captcha-best-hash-done");
@@ -137,10 +170,27 @@
             gears.style.display = "none";
             progressBar.style.width = "100%";
 
-            // console.log("success: " + e.data.nonce)
-            // console.log("hash: " + e.data.smallestHash)
-            // console.log("difficulty: " + e.data.difficulty)
+            description.innerHTML = "";
+            createElement(
+              description, 
+              "a", 
+              {"href": "https://en.wikipedia.org/wiki/Proof_of_work"}, 
+              "Proof of Work"
+            );
+            appendFragment(description, " complete, you may now submit your post. ");
+            createElement(description, "br");
+            appendFragment(description, "This an accessible & privacy-respecting anti-spam measure. ");
+            
             webWorkers.forEach(x => x.postMessage({stop: "STOP"}));
+
+            const callback = getCallbackFromGlobalNamespace(element.dataset.sqrCaptchaCallback);
+            if(!callback) {
+              console.error(`error: data-sqr-captcha-callback '${element.dataset.sqrCaptchaCallback}' `
+                           + "is not defined in the global namespace!");
+            } else {
+              callback(e.data.nonce);
+            }
+
           } else if(e.data.type == "error") {
             console.error(`error: webworker errored out: '${e.data.message}'`);
           } else {
@@ -157,6 +207,11 @@
           x.postMessage({ ...arg, workerId: i })
         })
       };
+
+      window.sqrCaptchaReset = () => {
+        window.sqrCaptchaInitDone = false;
+        webWorkers.forEach(x => x.terminate());
+      };
     }
   };
 
@@ -165,6 +220,20 @@
     window.sqrCaptchaInit();
   }
   
+  function getCallbackFromGlobalNamespace(callbackString) {
+    const callbackPath = callbackString.split(".");
+    let context = window;
+    callbackPath.forEach(pathElement => {
+      if(!context[pathElement]) {
+        return null;
+      } else {
+        context = context[pathElement];
+      }
+    });
+
+    return context;
+  }
+
   function getHashProgressText(challengeState) {
     const durationSeconds = ((new Date().getTime()) - challengeState.startTime)/1000;
     let hashesPerSecond = '[...]';
@@ -181,36 +250,30 @@
     return str.length < max ? leftPad(" " + str, max) : str;
   }
 
-  function renderCaptcha(parent, baseUrl) {
+  function renderCaptcha(parent) {
     const svgXMLNS = "http://www.w3.org/2000/svg";
     const xmlnsXMLNS = 'http://www.w3.org/2000/xmlns/';
     const xmlSpaceXMLNS = 'http://www.w3.org/XML/1998/namespace';
-   
 
-    if(!document.querySelector(`link[href='${baseUrl}/static/captcha.css']`)) {
-      createElement(document.head, "link", {
-        "rel": "stylesheet",
-        "charset": "utf8",
-        "href": `${baseUrl}/static/captcha.css`,
-      });
-    }
+    parent.innerHTML = "";
 
     const main = createElement(parent, "div", {"class": "sqr-captcha sqr-captcha-hidden"});
     const mainRow = createElement(main, "div", {"class": "sqr-captcha-row"});
     const mainColumn = createElement(mainRow, "div");
     const headerRow = createElement(mainColumn, "div");
-    createElement(
+    const headerLink = createElement(
       headerRow, 
       "a", 
       {
         "class": "sqr-captcha-link",
         "href": "https://git.sequentialread.com/forest/sequentialread-pow-captcha"
       }, 
-      "PoW! Captcha"
+      "💥PoW! "
     );
+    createElement(headerLink, "span", null, "Captcha");
     createElement(headerRow, "div", {"class": "sqr-captcha-best-hash"}, "loading...");
     const description = createElement(mainColumn, "div", {"class": "sqr-captcha-description"});
-    appendFragment(description, "Please wait for your computer to calculate a ");
+    appendFragment(description, "Please wait for your browser to calculate a ");
     createElement(
       description, 
       "a", 
@@ -219,7 +282,7 @@
     );
     appendFragment(description, ". ");
     createElement(description, "br");
-    appendFragment(description, "This a privacy-respecting anti-spam measure. ");
+    appendFragment(description, "This an accessible & privacy-respecting anti-spam measure. ");
     const progressBarContainer = createElement(main, "div", {
       "class": "sqr-captcha-progress-bar-container sqr-captcha-hidden"
     });
@@ -247,7 +310,7 @@
       "xmlns": [xmlnsXMLNS, svgXMLNS],
       "xml:space": [xmlSpaceXMLNS, 'preserve'],
       "version": "1.1",
-      "viewBox": "-30 0 250 218",
+      "viewBox": "-30 -5 250 223",
       "class": "sqr-gears-icon sqr-captcha-icon sqr-captcha-hidden"
     });
     createElementNS(gearsIcon, svgXMLNS, "path", { 

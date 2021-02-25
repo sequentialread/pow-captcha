@@ -33,7 +33,7 @@ console.log(`
 `)
 
 // add the actual webworker logic at the top, while filtering out comments
-const stubJS = fs.readFileSync("../static/proofOfWorkerStub.js", { encoding: "utf8" });
+const stubJS = fs.readFileSync("../proofOfWorkerStub.js", { encoding: "utf8" });
 console.log(stubJS.split("\n").filter(x => !x.startsWith("//")).join("\n"));
 
 console.log(`

@@ -62,7 +62,7 @@ onmessage = function(e) {
 
   const probabilityOfFailurePerAttempt = 1-(1/Math.pow(2, challenge.difficultyLevel));
 
-  let i = workerId * Math.pow(2, challenge.difficulty.length) * 100;
+  let i = workerId * Math.pow(2, challenge.difficultyLevel) * 1000;
   const hexPreimage = base64ToHex(challenge.preimage);
   let smallestHash = challenge.difficulty.split("").map(x => "f").join("");
 
@@ -105,7 +105,7 @@ onmessage = function(e) {
         postMessage({
           type: "success", 
           challenge: challengeBase64,
-          nonce: i.toString(16),
+          nonce: nonceHex,
           smallestHash: endOfHash,
           difficulty: challenge.difficulty
         });

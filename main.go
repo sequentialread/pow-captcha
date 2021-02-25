@@ -14,7 +14,7 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-const numberOfChallenges = 100
+const numberOfChallenges = 1000
 const deprecateAfterGenerations = 10
 const portNumber = 2370
 
@@ -143,7 +143,7 @@ func main() {
 
 		requestQuery := request.URL.Query()
 		challengeBase64 := requestQuery.Get("challenge")
-		nonceBase64 := requestQuery.Get("nonce")
+		nonceHex := requestQuery.Get("nonce")
 
 		if _, has := challenges[challengeBase64]; !has {
 			http.Error(
@@ -160,13 +160,13 @@ func main() {
 		delete(challenges, challengeBase64)
 
 		nonceBuffer := make([]byte, 8)
-		bytesWritten, err := base64.StdEncoding.Decode(nonceBuffer, []byte(nonceBase64))
-		if nonceBase64 == "" || err != nil {
+		bytesWritten, err := hex.Decode(nonceBuffer, []byte(nonceHex))
+		if nonceHex == "" || err != nil {
 			http.Error(
 				responseWriter,
 				fmt.Sprintf(
-					"400 bad request: nonce given by url param ?nonce=%s could not be base64 decoded",
-					nonceBase64,
+					"400 bad request: nonce given by url param ?nonce=%s could not be hex decoded",
+					nonceHex,
 				),
 				http.StatusBadRequest,
 			)
@@ -218,7 +218,7 @@ func main() {
 				responseWriter,
 				fmt.Sprintf(
 					"400 bad request: nonce given by url param ?nonce=%s did not result in a hash that meets the required difficulty",
-					nonceBase64,
+					nonceHex,
 				),
 				http.StatusBadRequest,
 			)
@@ -230,6 +230,8 @@ func main() {
 	})
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+
+	log.Printf("💥  PoW! Captcha server listening on port %d", portNumber)
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", portNumber), nil)
 
