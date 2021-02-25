@@ -290,8 +290,8 @@ Then, you should be able to visit the example Todo List application in the brows
 
 Lets walk through how example app works and how it integrates the 💥PoW! Captcha.
 
-The Todo List app has two pieces of configuration related to the captcha: the url and the difficulty. 
-Currently these are hardcoded into the Todo List app's code.
+The Todo List app has three pieces of configuration related to the captcha: the API token, the url, and the difficulty. 
+Currently the url and difficulty are hardcoded into the Todo List app's code, while the API token is provideded via an environment variable.
 
 ```
 // 5 bits of difficulty, 1 in 2^5 (1 in 32) tries will succeed on average.
@@ -301,6 +301,11 @@ Currently these are hardcoded into the Todo List app's code.
 const captchaDifficultyLevel = 5
 
 ...
+
+	apiToken := os.ExpandEnv("$CAPTCHA_API_TOKEN")
+	if apiToken == "" {
+		panic(errors.New("can't start the app, the CAPTCHA_API_TOKEN environment variable is required"))
+	}
 
   captchaAPIURL, err = url.Parse("http://localhost:2370")
 ```
@@ -338,8 +343,10 @@ This route displays a basic HTML page with a form, based on the template `index.
 This route does 4 things:
 
   1. If it was a `POST` request, call the `Verify` endpoint to ensure that a valid captcha challenge and nonce were posted.
+    - see `validateCaptcha` on line 202.
   2. If it was a *valid* `POST` request, add the posted `item` string to the global list variable `items`.
   3. Check if the global `captchaChallenges` list is running out, if it is, kick off a background process to grab more from the `GetChallenges` API.
+    - see `loadCaptchaChallenges` on line 155.
   4. Consume one challenge string from the global `captchaChallenges` list variable and output an HTML page containing that challenge.
 
 The captcha API (`GetChallenges` and `Verify`) was designed this way to optimize the performance of your application; instead of calling something like *GetCaptchaChallenge* for every single request, your application can load batches of captcha challenges asychronously in the background, and always have a challenge loaded into local memory & ready to go.
