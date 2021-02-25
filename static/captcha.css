@@ -1,0 +1,157 @@
+.sqr-captcha {
+  border: 1px solid #9359fa;
+  border-radius: 1rem;
+  font-size: 1.2rem;
+  padding: 1rem;
+  padding-top: 0.5rem;
+  border-bottom: 2px solid #452775;
+  margin-bottom: 2rem;
+}
+
+.sqr-captcha-link {
+  color: #333333;
+  font-weight: black;
+  text-decoration: underline;
+}
+
+.sqr-captcha-link:hover,
+.sqr-captcha-link:active,
+.sqr-captcha-link:visited {
+  color: #333333;
+}
+
+
+.sqr-captcha-row {
+  display: inline-flex;
+  flex-direction: row;
+  align-content: center;
+}
+
+.sqr-captcha-icon-container {
+  margin-left: 1.5rem;
+  margin-top: 0.2rem;
+  margin-bottom: -2rem;
+  margin-right: 0.2rem;
+}
+
+.sqr-captcha-best-hash {
+  font-family: monospace;
+  background: #585a29;
+  color: #f6ff72;
+  transition: background 0.5s ease-in-out, color 0.5s ease-in-out;
+  padding: 0.2rem 0.8rem;
+  margin-left: -0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bolder;
+  display: block;
+  float: right;
+}
+
+.sqr-captcha-best-hash-done {
+  background: #3b6262;
+  color: #53f65d;
+}
+
+.sqr-captcha-description {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.sqr-captcha-progress-bar-container {
+  border-radius: 1rem;
+  background: #444;
+  height: 1rem;
+  margin-top: 1rem;
+  border: 1px solid #727630;
+  box-sizing: content-box;
+  
+}
+
+.sqr-captcha-progress-bar {
+  background: #f6ff72;
+  height: 1rem;
+  width: 0;
+  border-radius: 1rem;
+  transition: width 0.5s ease-in-out;
+}
+
+.sqr-captcha-icon {
+  height: 4rem;
+}
+
+.sqr-captcha-hidden {
+  display: none;
+}
+
+.sqr-checkmark-icon-checkmark {
+  fill:none;
+  stroke: #31bd82;
+  stroke-width: 9rem;
+  stroke-dasharray: 60rem;
+  stroke-dashoffset: 74rem;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: 0.8s normal forwards ease-in-out sqr-draw-checkmark;
+  animation-play-state: inherit;
+}
+
+.sqr-checkmark-icon-border {
+  fill:none;
+  stroke: #ccc;
+  stroke-width: 4rem;
+  stroke-dasharray: 110rem;
+  stroke-dashoffset: 110rem;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: 0.8s normal forwards ease-in-out sqr-draw-checkmark-border;
+  animation-play-state: inherit;
+}
+
+.sqr-gears-icon-gear-large {
+  fill: #9359fa;
+  animation: 4s linear infinite sqr-spinning-gears-large;
+  animation-play-state: running;
+}
+.sqr-gears-icon-gear-small {
+  fill: #9359fa;
+  animation: 4s linear infinite sqr-spinning-gears-small;
+  animation-play-state: running;
+}
+
+
+@keyframes sqr-draw-checkmark-border {
+  0% {
+    stroke-dashoffset: 110rem; 
+  }
+  100% {
+    stroke-dashoffset: 10rem;
+  }
+}
+
+@keyframes sqr-draw-checkmark {
+  0% {
+    stroke-dashoffset: 74rem;
+  }
+  100% {
+    stroke-dashoffset: 120rem;
+  }
+}
+
+@keyframes sqr-spinning-gears-small {
+  0% {
+    transform: translate(16.1rem, 16.1rem) rotate(0deg) translate(-16.1rem,-16.1rem);
+  }
+  100% {
+    transform: translate(16.1rem, 16.1rem) rotate(360deg) translate(-16.1rem,-16.1rem);
+  }
+}
+
+@keyframes sqr-spinning-gears-large {
+  0% {
+    transform: translate(7.3rem, 7.3rem) rotate(360deg) translate(-7.3rem,-7.3rem);
+  }
+  100% {
+    transform: translate(7.3rem, 7.3rem) rotate(0deg) translate(-7.3rem,-7.3rem);
+  }
+}

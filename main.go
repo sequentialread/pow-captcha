@@ -7,9 +7,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"golang.org/x/crypto/scrypt"
 )
@@ -28,8 +28,9 @@ type ScryptParameters struct {
 
 type Challenge struct {
 	ScryptParameters
-	Preimage   string `json:"i"`
-	Difficulty string `json:"d"`
+	Preimage        string `json:"i"`
+	Difficulty      string `json:"d"`
+	DifficultyLevel int    `json:"dl"`
 }
 
 var currentChallengesGeneration = 0
@@ -38,7 +39,7 @@ var challenges = map[string]int{}
 func main() {
 
 	scryptParameters := ScryptParameters{
-		CPUAndMemoryCost: 2048,
+		CPUAndMemoryCost: 4096,
 		BlockSize:        8,
 		Paralellization:  1,
 		KeyLength:        16,
@@ -78,10 +79,24 @@ func main() {
 				return
 			}
 			preimage := base64.StdEncoding.EncodeToString(preimageBytes)
-			difficulty := fmt.Sprintf(fmt.Sprintf("%%0%dd", difficultyLevel), 0)
+			difficultyBytes := make([]byte, int(math.Ceil(float64(difficultyLevel)/float64(8))))
+
+			for j := 0; j < len(difficultyBytes); j++ {
+				difficultyByte := byte(0)
+				for k := 0; k < 8; k++ {
+					currentBitIndex := (len(difficultyBytes) * 8) - (j*8 + k)
+					if currentBitIndex > difficultyLevel {
+						difficultyByte = difficultyByte | 1<<k
+					}
+				}
+				difficultyBytes[j] = difficultyByte
+			}
+
+			difficulty := hex.EncodeToString(difficultyBytes)
 			challenge := Challenge{
-				Preimage:   preimage,
-				Difficulty: difficulty,
+				Preimage:        preimage,
+				Difficulty:      difficulty,
+				DifficultyLevel: difficultyLevel,
 			}
 			challenge.CPUAndMemoryCost = scryptParameters.CPUAndMemoryCost
 			challenge.BlockSize = scryptParameters.BlockSize
@@ -198,7 +213,7 @@ func main() {
 		}
 
 		hashHex := hex.EncodeToString(hash)
-		if !strings.HasSuffix(hashHex, challenge.Difficulty) {
+		if hashHex[len(hashHex)-len(challenge.Difficulty):] > challenge.Difficulty {
 			http.Error(
 				responseWriter,
 				fmt.Sprintf(
