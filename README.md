@@ -121,8 +121,7 @@ Return type: `text/plain` (error/status messages only)
   - This challenge was returned by `GetChallenges`.
   - `GetChallenges` hasn't been called 10 or more times since this challenge was originally returned.
   - `Verify` has not been called on this challenge before.
-  - The provided hexadecimal nonce solves the challenge.
-
+  - The provided hexadecimal nonce solves the challenge. (This nonce string will be passed to the function you specify in [data-sqr-captcha-callback](#data-sqr-captcha-callback) )
 Otherwise it returns 404, 400, or 500.
 
 
