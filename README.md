@@ -198,7 +198,7 @@ Then you would provide your callback like so:
 </script>
 ```
 
-You may also nest the callback inside object(s) if you wish: 
+> 💬 *INFO* You may also nest the callback inside object(s) if you wish: 
 
 `<div ... data-sqr-captcha-callback="myApp.myCallbackFunction"></div>`
 
@@ -374,7 +374,7 @@ There are two main important parts, the form and the javascript at the bottom:
 
 ⚠️ **NOTE** that the element with the `sqr-captcha` data properties is placed **inside a form element**. This is required, to allow the captcha to know which input elements it needs to trigger on. We only want the captcha to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
 
-> The double curly brace elements like `{{ .Challenge }}` are Golang string template interpolations. 
+> 💬 *INFO* The double curly brace elements like `{{ .Challenge }}` are Golang string template interpolations. 
 They will place values, usually strings, that are passed into the template from the application.
 
 When the page loads, the `captcha.js` script will execute, querying the page for all elements with the `data-sqr-captcha-challenge`
@@ -382,7 +382,7 @@ property. It will then validate each element to make sure it also has the `data-
 
 When the Proof of Work finishes, `captcha.js` will call the function specified by `data-sqr-captcha-callback`, passing the winning nonce as the first argument, or throw an error if that function is not defined.
 
-💬 **INFO** that the element with the `sqr-captcha` data properties also has a class that *WE* defined, called `captcha-container`.
+> 💬 *INFO* that the element with the `sqr-captcha` data properties also has a class that *WE* defined, called `captcha-container`.
 This class has a very small font size. When I was designing the css for the captcha element, I made everything scale based on the font size (by using `em`). But because the page I was testing it on had a small font by default, I accidentally made it huge when it is rendered on a default HTML page. So for now you will want to make the font size of the element which contains it fairly small. 
 
 ```
