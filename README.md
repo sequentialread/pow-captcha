@@ -1,6 +1,6 @@
 # 💥PoW! Captcha
 
-A proof of work based captcha similar to [friendly captcha](https://github.com/FriendlyCaptcha/friendly-challenge), but lightweight, self-hosted and Affero GPL licensed.
+A proof of work based captcha similar to [friendly captcha](https://github.com/FriendlyCaptcha/friendly-challenge), but lightweight, self-hosted and Affero GPL licensed. All dependencies are included, total front-end unminified gzipped file size is about 50KB.
 
 ![screencast](readme/screencast.gif)
 
@@ -248,6 +248,23 @@ property. It will then validate each element to make sure it also has the `data-
 When the Proof of Work finishes, `captcha.js` will call the function specified by `data-sqr-captcha-callback`, passing the winning nonce as the first argument, or throw an error if that function is not defined.
 
 I think that concludes the walkthrough! In the Todo App, as soon as `captcha.js` calls `myCaptchaCallback`, the form will be completely filled out and the submit button will be enabled. When the form is posted, the browser will make a `POST` request to the server, and the server logic we already discussed will take over, closing the loop. 
+
+# Implementation Details for Developers
+
+💥PoW! Captcha uses [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers)s and [WebAssembly (WASM)](https://developer.mozilla.org/en-US/docs/WebAssembly) to calculate Proof of Work in the browser as efficiently as possible. WebWorkers allow the application to run code on multiple threads and take advantage of multi-core CPUs. WebAssembly gives us access to *actual integers* (😲) and more low-level memory operations that have been historically missing from JavaScript. 
+
+I measured the performance of the application with and without WebWorker / WebAssembly on a variety of devices.
+
+I tried two different implementations of the scrypt hash function, one from the [Stanford Javascript Crypto Library (sjcl)](https://github.com/bitwiseshiftleft/sjcl) and the WASM one from [github.com/MyEtherWallet/scrypt-wasm](https://github.com/MyEtherWallet/scrypt-wasm).
+
+| hardware | sjcl,single thread | sjcl,multi-thread | WASM,multi-thread |
+| :------------- | :------------- | :----------: | -----------: |
+| Laptop | 1-2 h/s | ~5 h/s  | ~70 h/s  |
+| Phone  | not tested | not tested | ~12 h/s |
+
+I had some trouble getting the WASM module loaded properly inside the WebWorkers. In my production environment, the web application server and the captcha server are running on separate subdomains, so I was getting cross-origin security violation issues. 
+
+I ended up embedding the WASM binary inside the WebWorker javascript `proofOfWorker.js` using a boutique binary encoding called [base32768](https://github.com/qntm/base32768). I set up a custom build process for this in the `wasm_build` folder. It even includes the scripts necessary to clone the github.com/MyEtherWallet/scrypt-wasm repo and install the Rust compiler! You are welcome! However, this script does assume that you are running on a Linux computer. I have not tested it outside of Linux.
 
 
 # What is Proof of Work? Extended Concrete Example
