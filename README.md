@@ -23,7 +23,7 @@ PoW does not require any 3rd party or authority to enforce rules, it is based on
 
 PoW works fairly well as a deterrent against spam, a PoW requirement makes sending high-volume spam computationally expensive.
 
-It is impossible to predict how long a given Proof of Work will take to calculate. It could take no time at all (got it on the first try), or it could take an abnormally long time (got unlucky and took forever to find the right hash). You can think of it like flipping coins until you get a certain # of heads in a row.  This **DOES** matter in terms of user interface and usability, so you will want to make sure that the difficulty is low enough that users are extremely unlikely to be turned away by an unlucky "takes forever" captcha.
+It is impossible to predict how long a given Proof of Work will take to calculate. It could take no time at all (got it on the first try 😎 ), or it could take an abnormally long time (got unlucky and took forever to find the right hash 😟 ). You can think of it like flipping coins until you get a certain # of heads in a row.  This **DOES** matter in terms of user interface and usability, so you will want to make sure that the difficulty is low enough that users are extremely unlikely to be turned away by an unlucky "takes forever" captcha.
 
 If you want to read more or see a concrete example, see [What is Proof of Work? Extended Concrete Example](#what-is-proof-of-work-extended-concrete-example) at the bottom of this file.
 
@@ -161,7 +161,7 @@ const captchaDifficultyLevel = 8
 
 ...
 
-	captchaAPIURL, err = url.Parse("http://localhost:2370")
+  captchaAPIURL, err = url.Parse("http://localhost:2370")
 ```
 
 When the Todo List app starts, it has a few procedures it runs through to ensure it's ready to run, including 
@@ -173,9 +173,9 @@ func main() {
   ...
 
   err = loadCaptchaChallenges()
-	if err != nil {
-		panic(errors.Wrap(err, "can't start the app because could not loadCaptchaChallenges():"))
-	}
+  if err != nil {
+    panic(errors.Wrap(err, "can't start the app because could not loadCaptchaChallenges():"))
+  }
 ```
 
 `loadCaptchaChallenges()` calls the `GetChallenges` API & sets the global variable `captchaChallenges`.
@@ -187,7 +187,7 @@ The Todo List app only has one route: `/`.
 This route displays a basic HTML page with a form, based on the template `index.html`.
 
 ```
-	http.HandleFunc("/", func(responseWriter http.ResponseWriter, request *http.Request) {
+  http.HandleFunc("/", func(responseWriter http.ResponseWriter, request *http.Request) {
 
     ...
 
