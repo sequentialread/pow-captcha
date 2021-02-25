@@ -302,10 +302,10 @@ const captchaDifficultyLevel = 5
 
 ...
 
-	apiToken := os.ExpandEnv("$CAPTCHA_API_TOKEN")
-	if apiToken == "" {
-		panic(errors.New("can't start the app, the CAPTCHA_API_TOKEN environment variable is required"))
-	}
+  apiToken := os.ExpandEnv("$CAPTCHA_API_TOKEN")
+  if apiToken == "" {
+    panic(errors.New("can't start the app, the CAPTCHA_API_TOKEN environment variable is required"))
+  }
 
   captchaAPIURL, err = url.Parse("http://localhost:2370")
 ```
