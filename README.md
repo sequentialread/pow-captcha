@@ -122,7 +122,9 @@ Return type: `text/plain` (error/status messages only)
   - `GetChallenges` hasn't been called 10 or more times since this challenge was originally returned.
   - `Verify` has not been called on this challenge before.
   - The provided hexadecimal nonce solves the challenge. 
-    - The winning nonce string will be passed to the function you specify in [data-sqr-captcha-callback](#data-sqr-captcha-callback). You just have to make sure to post it to your server so your server can include it when it calls `/Verify`
+    - (The winning nonce string will be passed to the function you specify in [data-sqr-captcha-callback](#data-sqr-captcha-callback). You just have to make sure to post it to your server so your server can include it when it calls `/Verify`)
+
+
 Otherwise it returns 404, 400, or 500.
 
 
