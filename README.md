@@ -459,6 +459,8 @@ This is related to the famous [Halting Problem](https://en.wikipedia.org/wiki/Ha
 
 PoW is a game which exploits these interesting properties of hash functions. It works like this: I give you a file, and then you have to change the file (Add "`a`"s at the end, increment a number in the file, whatever you want to do) and recalculate the hash each time you change it, until you find a hash which ends in two zeros in a row. Or three zeros in a row, or four, whatever. Since there are 16 possible values for each character, each additional required zero divides your likelhood of finding the "winning" hash by 16.
 
+The number or string of "`a`"s, whatever it is you use to change the file before you hash it, is called the Nonce.
+
 This is exactly how Bitcoin mining works, Bitcoin requires miners to search for SHA256 hashes that end in a rediculously unlikely number of zeros, like flipping 100 coins and getting 100 heads in a row.
 
 💥PoW! Captcha uses a different hash function called [Scrypt](https://en.wikipedia.org/wiki/Scrypt). Scrypt was designed to take an arbitrarily long amount of time to execute on a computer, and to be hard to optimize.
