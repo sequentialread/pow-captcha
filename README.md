@@ -243,7 +243,7 @@ There are two main important parts, the form and the javascript at the bottom:
 They will place values, usually strings, that are passed into the template from the application.
 
 When the page loads, the `captcha.js` script will execute, querying the page for all elements with the `data-sqr-captcha-challenge`
-property. It will then validate each element to make sure it also has the `data-sqr-captcha-url` and `data-sqr-captcha-callback` properties. For each element it found, it will locate the `<form>` element enclosing the element. If none are found, it will throw an error. Otherwise, it will set up an event listener on every form element inside that form, so that as soon as the user starts filling out the form, the captcha display will pop up and the Proof of Work will begin. 
+property. It will then validate each element to make sure it also has the `data-sqr-captcha-url` and `data-sqr-captcha-callback` properties. For each element it found, it will locate the `<form>` parent/grandparent enclosing the element. If none are found, it will throw an error. Otherwise, it will set up an event listener on every input element inside that form, so that as soon as the user starts filling out the form, the captcha display will pop up and the Proof of Work will begin. 
 
 When the Proof of Work finishes, `captcha.js` will call the function specified by `data-sqr-captcha-callback`, passing the winning nonce as the first argument, or throw an error if that function is not defined.
 
