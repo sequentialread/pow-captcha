@@ -43,8 +43,8 @@ if [ ! -d node_modules ]; then
   npm install
 fi
 
-node build_wasm_webworker.js > "../static/proofOfWorkerWASM.js"
+node build_wasm_webworker.js > "../static/proofOfWorker.js"
 
-printf "\n\nbuilt ../static/proofOfWorkerWASM.js successfully!\n\n"
+printf "\n\nbuilt ../static/proofOfWorker.js successfully!\n\n"
 
 

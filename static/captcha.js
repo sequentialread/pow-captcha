@@ -95,7 +95,7 @@
     if(url) {
 
       // https://stackoverflow.com/questions/21913673/execute-web-worker-from-different-origin/62914052#62914052
-      const webWorkerUrlWhichIsProbablyCrossOrigin = `${url}/static/proofOfWorkerWASM.js`;
+      const webWorkerUrlWhichIsProbablyCrossOrigin = `${url}/static/proofOfWorker.js`;
 
       const webWorkerPointerDataURL = URL.createObjectURL( 
         new Blob(

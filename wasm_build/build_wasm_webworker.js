@@ -28,12 +28,12 @@ console.log(`
 
 // THIS FILE IS GENERATED AUTOMATICALLY
 // Don't edit this file by hand. 
-// Either edit proofOfWorkerWASMStub.js or edit the build located in the wasm_build folder.
+// Either edit proofOfWorkerStub.js or edit the build located in the wasm_build folder.
 
 `)
 
 // add the actual webworker logic at the top, while filtering out comments
-const stubJS = fs.readFileSync("../static/proofOfWorkerWASMStub.js", { encoding: "utf8" });
+const stubJS = fs.readFileSync("../static/proofOfWorkerStub.js", { encoding: "utf8" });
 console.log(stubJS.split("\n").filter(x => !x.startsWith("//")).join("\n"));
 
 console.log(`
