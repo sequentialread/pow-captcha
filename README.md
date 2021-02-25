@@ -15,6 +15,16 @@ This application was designed to be a drop-in replacement for ReCaptcha by Googl
  4. When the Captcha is complete, its JavaScript will fire off a callback to your JavaScript (usually used to enable the submit button on the form)
  5. When the form is submitted, your web application submites the captcha result to the captcha HTTP API for validation
 
+# What is Proof of Work? 
+
+Proof of Work (PoW) is a scheme by which one computer can prove to another that it expended a certain amount of computational effort. 
+
+PoW does not require any 3rd party or authority to enforce rules, it is based on mathematics and the nature of the universe.
+
+PoW works fairly well as a deterrent against spam, a PoW requirement makes sending high-volume spam computationally expensive.
+
+If you want to read more or see a concrete example, see [](What is Proof of Work? Extended Concrete Example)
+
 # Sequence diagram
 
 ![sequence diagram](readme/sequence.png)
@@ -238,4 +248,45 @@ When the Proof of Work finishes, `captcha.js` will call the function specified b
 I think that concludes the walkthrough! In the Todo App, as soon as `captcha.js` calls `myCaptchaCallback`, the form will be completely filled out and the submit button will be enabled. When the form is posted, the browser will make a `POST` request to the server, and the server logic we already discussed will take over, closing the loop. 
 
 
+# What is Proof of Work? Extended Concrete Example
 
+
+When you calculate the hash of a file or a piece of data, you get this random string of characters:
+
+```
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
+4f4dbcdd8f27fdf119b828acd79a9079e28f2c837dbb82e80bee24eddd14af07  LICENSE
+```
+
+Here, I have called the SHA256 hash function on the Affero GPL `LICENSE` file in this repo. The result is displayed as a hexidecimal string, that is, each character can have one of 16 possible values, 0-9 and a-f. You can think of it like rolling a whole bunch of 16-sided dice, however, it's not random like dice are, its *pseudorandom*, meaning that given the same input file, if we execute the same hash function multiple times, it will return the same output. All the dice will land the same way every time:
+
+```
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
+4f4dbcdd8f27fdf119b828acd79a9079e28f2c837dbb82e80bee24eddd14af07  LICENSE
+
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
+4f4dbcdd8f27fdf119b828acd79a9079e28f2c837dbb82e80bee24eddd14af07  LICENSE
+
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
+4f4dbcdd8f27fdf119b828acd79a9079e28f2c837dbb82e80bee24eddd14af07  LICENSE
+```
+
+However, If I change the input, even if I only change it a tiny bit, say, append the letter `a` at the end of the file, it will completely change the way the result shakes out:
+
+```
+# append the letter a to the end of the file
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ echo 'a' >> LICENSE 
+
+# calculate the SHA256 hash again
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
+91cd044bf33adfaeea8be3feece42770c6721e385a5e7cfa05966665f006ec45  LICENSE
+```
+
+It's impossible to tell how the hash will be affected by changing the input.. Well, unless you calculate the hash! 
+This is related to the famous [Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) from computer science. 
+
+PoW is a game which exploits these interesting properties of hash functions. It works like this: I give you a file, and then you have to change the file (Add `a`s at the end, increment a number in the file, whatever you want to do) and recalculate the hash each time you change it, until you find a hash which ends in two zeros in a row. Or three zeros in a row, or four, whatever. Since there are 16 possible values for each character, each additional required zero divides your likelhood of finding the hash by 16.
+
+This is exactly how Bitcoin mining works, Bitcoin requires miners to search for SHA256 hashes that end in a rediculously unlikely number of zeros, like flipping 100 coins and getting 100 heads in a row.
+
+💥PoW! Captcha uses a different hash function called [Scrypt](https://en.wikipedia.org/wiki/Scrypt). Scrypt
