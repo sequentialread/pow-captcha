@@ -135,7 +135,7 @@ Files:
   - captcha.css
   - proofOfWorker.js
 
-You only need to include `captcha.js` in your page, it will pull in the other files automatically.
+You only need to include `captcha.js` in your page, it will pull in the other files automatically if they are not already present in the page.
 See below for a more detailed implementation walkthrough.
 
 # HTTP Admin API
