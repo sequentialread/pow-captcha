@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -34,13 +35,18 @@ func main() {
 		Timeout: time.Second * time.Duration(5),
 	}
 
+	apiToken := os.ExpandEnv("$CAPTCHA_API_TOKEN")
+	if apiToken == "" {
+		panic(errors.New("can't start the app, the CAPTCHA_API_TOKEN environment variable is required"))
+	}
+
 	var err error
 	captchaAPIURL, err = url.Parse("http://localhost:2370")
 	if err != nil {
 		panic(errors.New("can't start the app because can't parse captchaAPIURL"))
 	}
 
-	err = loadCaptchaChallenges()
+	err = loadCaptchaChallenges(apiToken)
 	if err != nil {
 		panic(errors.Wrap(err, "can't start the app because could not loadCaptchaChallenges():"))
 	}
@@ -59,7 +65,7 @@ func main() {
 			// and if not, return HTTP 400 Bad Request
 			err := request.ParseForm()
 			if err == nil {
-				err = validateCaptcha(request.Form.Get("challenge"), request.Form.Get("nonce"))
+				err = validateCaptcha(apiToken, request.Form.Get("challenge"), request.Form.Get("nonce"))
 			}
 
 			if err != nil {
@@ -76,12 +82,12 @@ func main() {
 		// note that in a real application in production, you would want to use a lock or mutex to ensure that
 		// this only happens once if lots of requests come in at the same time
 		if len(captchaChallenges) > 0 && len(captchaChallenges) < 5 {
-			go loadCaptchaChallenges()
+			go loadCaptchaChallenges(apiToken)
 		}
 
 		// if we somehow completely ran out of challenges, load more synchronously
 		if captchaChallenges == nil || len(captchaChallenges) == 0 {
-			err = loadCaptchaChallenges()
+			err = loadCaptchaChallenges(apiToken)
 			if err != nil {
 				log.Printf("loading captcha challenges failed: %v", err)
 				responseWriter.WriteHeader(500)
@@ -146,7 +152,7 @@ func renderPageTemplate(challenge string) ([]byte, error) {
 	return outputBuffer.Bytes(), nil
 }
 
-func loadCaptchaChallenges() error {
+func loadCaptchaChallenges(apiToken string) error {
 
 	query := url.Values{}
 	query.Add("difficultyLevel", strconv.Itoa(captchaDifficultyLevel))
@@ -159,6 +165,7 @@ func loadCaptchaChallenges() error {
 	}
 
 	captchaRequest, err := http.NewRequest("POST", loadURL.String(), nil)
+	captchaRequest.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
 	if err != nil {
 		return err
 	}
@@ -192,7 +199,7 @@ func loadCaptchaChallenges() error {
 	return nil
 }
 
-func validateCaptcha(challenge, nonce string) error {
+func validateCaptcha(apiToken, challenge, nonce string) error {
 	query := url.Values{}
 	query.Add("challenge", challenge)
 	query.Add("nonce", nonce)
@@ -205,6 +212,7 @@ func validateCaptcha(challenge, nonce string) error {
 	}
 
 	captchaRequest, err := http.NewRequest("POST", verifyURL.String(), nil)
+	captchaRequest.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
 	if err != nil {
 		return err
 	}

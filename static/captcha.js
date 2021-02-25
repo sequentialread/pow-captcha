@@ -266,7 +266,8 @@
       "a", 
       {
         "class": "sqr-captcha-link",
-        "href": "https://git.sequentialread.com/forest/sequentialread-pow-captcha"
+        "href": "https://git.sequentialread.com/forest/sequentialread-pow-captcha",
+        "target": "_blank"
       }, 
       "💥PoW! "
     );
@@ -277,7 +278,7 @@
     createElement(
       description, 
       "a", 
-      {"href": "https://en.wikipedia.org/wiki/Proof_of_work"}, 
+      { "href": "https://en.wikipedia.org/wiki/Proof_of_work", "target": "_blank" }, 
       "Proof of Work"
     );
     appendFragment(description, ". ");

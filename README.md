@@ -4,7 +4,6 @@ A proof of work based captcha similar to [friendly captcha](https://github.com/F
 
 ![screencast](readme/screencast.gif)
 
-
 # How it works 
 
 This application was designed to be a drop-in replacement for ReCaptcha by Google. It works pretty much the same way;
@@ -36,9 +35,55 @@ If you want to read more or see a concrete example, see [What is Proof of Work? 
 This diagram was created with https://app.diagrams.net/.
 To edit it, download the <a download href="readme/sequence.drawio">diagram file</a> and edit it with the https://app.diagrams.net/ web application, or you may run the application from [source](https://github.com/jgraph/drawio) if you wish.
 
-# HTTP API
+# Configuring
+
+💥PoW! Captcha gets all of its configuration from environment variables.
+
+#### `POW_CAPTCHA_ADMIN_API_TOKEN`
+
+⚠️ **REQUIRED** 
+
+This token allows control of the Admin API & allows the bearer to create, list, and revoke application tokens.
+
+----
+
+#### `POW_CAPTCHA_BATCH_SIZE`
+
+💬 *OPTIONAL* default value is 1000
+
+How many captcha challenges to return at once.
+
+----
+
+#### `POW_CAPTCHA_DEPRECATE_AFTER_BATCHES`
+
+💬 *OPTIONAL* default value is 10
+
+How many batches old captcha challenges can be before being dropped.
+
+----
+
+#### `POW_CAPTCHA_LISTEN_PORT`
+
+💬 *OPTIONAL* default value is 2730
+
+Which TCP port should the server listen on.
+
+----
+
+#### `POW_CAPTCHA_SCRYPT_CPU_AND_MEMORY_COST`
+
+💬 *OPTIONAL* default value is 4096
+
+Allows you to tweak how difficult each individual hash in the proof of work will be.
+
+----
+
+# HTTP Captcha API
 
 #### `POST /GetChallenges?difficultyLevel=<int>`
+
+Required Header: `Authorization: Bearer <api-token>`
 
 Return type: `application/json` 
 
@@ -51,6 +96,8 @@ The recommended value is 8. A difficulty of 8 will be solved quickly by a laptop
 
 
 #### `POST /Verify?challenge=<string>&nonce=<string>`
+
+Required Header: `Authorization: Bearer <api-token>`
 
 Return type: `text/plain` (error/status messages only)
 
@@ -76,6 +123,32 @@ Files:
 
 You only need to include `captcha.js` in your page, it will pull in the other files automatically.
 See below for a more detailed implementation walkthrough.
+
+## HTTP Admin API
+
+#### `GET /Tokens`
+
+Required Header: `Authorization: Bearer <admin-api-token>`
+
+Return type: `text/plain` 
+
+Lists all existing api tokens in CSV format, including the token itself, the name, and when it was created.
+
+#### `POST /Tokens/Create?name=<string>`
+
+Required Header: `Authorization: Bearer <admin-api-token>`
+
+Return type: `text/plain`
+
+Creates a new given API token with the given name and returns the token as a plain text hexadecimal string.
+
+#### `POST /Tokens/Revoke?token=<api-token>`
+
+Required Header: `Authorization: Bearer <admin-api-token>`
+
+Return type: `text/plain`  (error/status messages only)
+
+Revokes an existing API token.
 
 
 # HTML DOM API
@@ -133,19 +206,59 @@ in as simple of a fashion as possible.
 
 If you wish to run the example app, you will have to run both the 💥PoW! Captcha server and the example app server.
 
-The easiest way to do this would probably be to open two separate terminal windows.
+The easiest way to do this would probably be to open two separate terminal windows or tabs and run each app in its own terminal.
 
-`terminal 1`
+#### `terminal 1`
 ```
 forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ go run main.go
-2021/02/25 00:27:12 💥  PoW! Captcha server listening on port 2370
+
+panic: can't start the app, the POW_CAPTCHA_ADMIN_API_TOKEN environment variable is required
+
+goroutine 1 [running]:
+main.main()
+        /home/forest/Desktop/git/sequentialread-pow-captcha/main.go:84 +0xf45
+exit status 2
+```
+As you can see, the server requires an admin API token to be set. This is the token we will use authenticate and create
+individual tokens for different apps or different people who all might want to use the captcha server.
+
+Once we provide this admin API token environment variable, it will run just fine:
+
+```
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ POW_CAPTCHA_ADMIN_API_TOKEN="example_admin" go run main.go
+2021/02/25 16:24:00 💥  PoW! Captcha server listening on port 2370
 ```
 
-`terminal 2`
+Now let's try to launch the example Todo List application:
+
+#### `terminal 2`
 ```
 forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ cd example/
 forest@thingpad:~/Desktop/git/sequentialread-pow-captcha/example$ go run main.go
-2021/02/25 01:15:17 📋 Todo List example application listening on port 8080
+
+panic: can't start the app, the CAPTCHA_API_TOKEN environment variable is required
+
+goroutine 1 [running]:
+main.main()
+        /home/forest/Desktop/git/sequentialread-pow-captcha/example/main.go:40 +0x488
+exit status 2
+```
+
+It's a similar story for the example app, except this time we can't just make up any old token, we have to ask the captcha server to generate a new API token for the example app. I will do this by manually sending it an http request with `curl`:
+
+```
+$ curl -X POST -H "Authorization: Bearer example_admin" http://localhost:2370/Tokens/Create
+400 Bad Request: url param ?name=<string> is required
+
+$ curl -X POST -H "Authorization: Bearer example_admin" http://localhost:2370/Tokens/Create?name=todo-list
+b804f221e8a9053b2e6e89de83c5d7a4
+```
+
+Now we can use this token to start the example Todo List app:
+
+```
+$ CAPTCHA_API_TOKEN="b804f221e8a9053b2e6e89de83c5d7a4" go run main.go
+2021/02/25 16:38:32 📋  Todo List example application listening on port 8080
 ```
 
 Then, you should be able to visit the example Todo List application in the browser at http://localhost:8080.
@@ -252,6 +365,21 @@ property. It will then validate each element to make sure it also has the `data-
 
 When the Proof of Work finishes, `captcha.js` will call the function specified by `data-sqr-captcha-callback`, passing the winning nonce as the first argument, or throw an error if that function is not defined.
 
+💬 **INFO** that the element with the `sqr-captcha` data properties also has a class that *WE* defined, called `captcha-container`.
+This class has a very small font size. When I was designing the css for the captcha element, I made everything scale based on the font size (by using `em`). But because the page I was testing it on had a small font by default, I accidentally made it huge when it is rendered on a default HTML page. So for now you will want to make the font size of the element which contains it fairly small. 
+
+```
+<style>
+    .captcha-container {
+      margin-top: 1em;
+      font-size: 10px;
+    }
+    
+    ...
+
+</style>
+```
+
 I think that concludes the walkthrough! In the Todo App, as soon as `captcha.js` calls `myCaptchaCallback`, the form will be completely filled out and the submit button will be enabled. When the form is posted, the browser will make a `POST` request to the server, and the server logic we already discussed will take over, closing the loop. 
 
 # Implementation Details for Developers
@@ -264,8 +392,10 @@ I tried two different implementations of the scrypt hash function, one from the 
 
 | hardware | sjcl,single thread | sjcl,multi-thread | WASM,multi-thread |
 | :------------- | :------------- | :----------: | -----------: |
-| Laptop | 1-2 h/s | ~5 h/s  | ~70 h/s  |
-| Phone  | not tested | not tested | ~12 h/s |
+| Lenovo T480s | 1-2 h/s | ~5 h/s  | ~70 h/s  |
+| Motorolla G7  | not tested | not tested | ~12 h/s |
+| Macbook Air 2018  | not tested | not tested | ~ 32h/s |
+| Google Pixel 3a | not tested | not tested | ~ 24h/s |
 
 I had some trouble getting the WASM module loaded properly inside the WebWorkers. In my production environment, the web application server and the captcha server are running on separate subdomains, so I was getting cross-origin security violation issues. 
 
