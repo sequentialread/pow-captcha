@@ -382,7 +382,7 @@ property. It will then validate each element to make sure it also has the `data-
 
 When the Proof of Work finishes, `captcha.js` will call the function specified by `data-sqr-captcha-callback`, passing the winning nonce as the first argument, or throw an error if that function is not defined.
 
-> 💬 *INFO* that the element with the `sqr-captcha` data properties also has a class that *WE* defined, called `captcha-container`.
+> 💬 *INFO* the element with the `sqr-captcha` data properties also has a class that *WE* defined, called `captcha-container`.
 This class has a very small font size. When I was designing the css for the captcha element, I made everything scale based on the font size (by using `em`). But because the page I was testing it on had a small font by default, I accidentally made it huge when it is rendered on a default HTML page. So for now you will want to make the font size of the element which contains it fairly small. 
 
 ```
