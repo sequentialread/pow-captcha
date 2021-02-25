@@ -25,6 +25,8 @@ PoW works fairly well as a deterrent against spam, a PoW requirement makes sendi
 
 It is impossible to predict how long a given Proof of Work will take to calculate. It could take no time at all (got it on the first try 😎 ), or it could take an abnormally long time (got unlucky and took forever to find the right hash 😟 ). You can think of it like flipping coins until you get a certain # of heads in a row.  This **DOES** matter in terms of user interface and usability, so you will want to make sure that the difficulty is low enough that users are extremely unlikely to be turned away by an unlucky "takes forever" captcha.
 
+The word ["Nonce"](https://en.wikipedia.org/wiki/Cryptographic_nonce#Hashing) in this document refers to "Number Used Once", in the context of hashing and proof of work.
+
 If you want to read more or see a concrete example, see [What is Proof of Work? Extended Concrete Example](#what-is-proof-of-work-extended-concrete-example) at the bottom of this file.
 
 # Sequence diagram
@@ -56,7 +58,7 @@ Return type: `text/plain` (error/status messages only)
 
   - This challenge was returned by `GetChallenges`.
   - `GetChallenges` hasn't been called 10 or more times since this challenge was originally returned.
-  - Verify has not been called on this challenge before.
+  - `Verify` has not been called on this challenge before.
   - The provided hexadecimal nonce solves the challenge.
 
 Otherwise it returns 404, 400, or 500.
