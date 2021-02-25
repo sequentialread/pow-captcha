@@ -4,6 +4,21 @@ A proof of work based captcha similar to [friendly captcha](https://github.com/F
 
 ![screencast](readme/screencast.gif)
 
+
+### Table of Contents
+
+ 1. [How it works](#how-it-works)
+ 1. [What is Proof of Work?](#what-is-proof-of-work)
+ 1. [Sequence diagram](#sequence-diagram)
+ 1. [Configuring](#configuring)
+ 1. [HTTP Captcha API](#http-captcha-api)
+ 1. [HTTP Admin API](#http-admin-api)
+ 1. [HTML DOM API](#html-dom-api)
+ 1. [Running the example app](#running-the-example-app)
+ 1. [Implementation walkthrough via example app](#implementation-walkthrough-via-example-app)
+ 1. [Implementation Details for Developers](#implementation-details-for-developers)
+ 1. [What is Proof of Work? Extended Concrete Example](#what-is-proof-of-work-extended-concrete-example)
+
 # How it works 
 
 This application was designed to be a drop-in replacement for ReCaptcha by Google. It works pretty much the same way;
@@ -28,7 +43,7 @@ The word ["Nonce"](https://en.wikipedia.org/wiki/Cryptographic_nonce#Hashing) in
 
 If you want to read more or see a concrete example, see [What is Proof of Work? Extended Concrete Example](#what-is-proof-of-work-extended-concrete-example) at the bottom of this file.
 
-# Sequence diagram
+# Overview sequence diagram
 
 ![sequence diagram](readme/sequence.png)
 
@@ -59,7 +74,7 @@ How many captcha challenges to return at once.
 
 💬 *OPTIONAL* default value is 10
 
-How many batches old captcha challenges can be before being dropped.
+How many "batches-old" captcha challenges can be before being dropped from memory.
 
 ----
 
@@ -124,7 +139,7 @@ Files:
 You only need to include `captcha.js` in your page, it will pull in the other files automatically.
 See below for a more detailed implementation walkthrough.
 
-## HTTP Admin API
+# HTTP Admin API
 
 #### `GET /Tokens`
 
