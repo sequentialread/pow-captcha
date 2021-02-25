@@ -22,8 +22,11 @@ var captchaChallenges []string
 
 var items []string
 
-// 8 bits of difficulty, 1 in 2^8 (1 in 256) tries will succeed on average.
-const captchaDifficultyLevel = 8
+// 5 bits of difficulty, 1 in 2^6 (1 in 32) tries will succeed on average.
+//
+// 8 bits of difficulty would be ok for apps that are never used on mobile phones, 6 is better suited for mobile apps
+//
+const captchaDifficultyLevel = 5
 
 func main() {
 

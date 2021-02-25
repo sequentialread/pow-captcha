@@ -14,9 +14,10 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-const numberOfChallenges = 1000
-const deprecateAfterGenerations = 10
+const batchSize = 1000
+const deprecateAfterBatches = 10
 const portNumber = 2370
+const scryptCPUAndMemoryCost = 4096
 
 // https://en.wikipedia.org/wiki/Scrypt
 type ScryptParameters struct {
@@ -39,7 +40,7 @@ var challenges = map[string]int{}
 func main() {
 
 	scryptParameters := ScryptParameters{
-		CPUAndMemoryCost: 4096,
+		CPUAndMemoryCost: scryptCPUAndMemoryCost,
 		BlockSize:        8,
 		Paralellization:  1,
 		KeyLength:        16,
@@ -69,8 +70,8 @@ func main() {
 			return
 		}
 
-		toReturn := make([]string, numberOfChallenges)
-		for i := 0; i < numberOfChallenges; i++ {
+		toReturn := make([]string, batchSize)
+		for i := 0; i < batchSize; i++ {
 			preimageBytes := make([]byte, 8)
 			_, err := rand.Read(preimageBytes)
 			if err != nil {
@@ -116,7 +117,7 @@ func main() {
 		}
 		toRemove := []string{}
 		for k, generation := range challenges {
-			if generation+deprecateAfterGenerations < currentChallengesGeneration {
+			if generation+deprecateAfterBatches < currentChallengesGeneration {
 				toRemove = append(toRemove, k)
 			}
 		}

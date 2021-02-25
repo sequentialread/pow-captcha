@@ -1,6 +1,6 @@
 # 💥PoW! Captcha
 
-A proof of work based captcha similar to [friendly captcha](https://github.com/FriendlyCaptcha/friendly-challenge), but lightweight, self-hosted and Affero GPL licensed. All dependencies are included, total front-end unminified gzipped file size is about 50KB.
+A proof of work based captcha similar to [friendly captcha](https://github.com/FriendlyCaptcha/friendly-challenge), but lightweight, self-hosted and GPLv3 licensed. All dependencies are included, total front-end unminified gzipped file size is about 50KB.
 
 ![screencast](readme/screencast.gif)
 
@@ -158,8 +158,11 @@ The Todo List app has two pieces of configuration related to the captcha: the ur
 Currently these are hardcoded into the Todo List app's code.
 
 ```
-// 8 bits of difficulty, 1 in 2^8 (1 in 256) tries will succeed on average.
-const captchaDifficultyLevel = 8
+// 5 bits of difficulty, 1 in 2^5 (1 in 32) tries will succeed on average.
+//
+// 7 bits of difficulty would be fine for apps that are never used on mobile phones, 5 is better suited for mobile apps
+//
+const captchaDifficultyLevel = 5
 
 ...
 
@@ -275,32 +278,32 @@ I ended up embedding the WASM binary inside the WebWorker javascript `proofOfWor
 When you calculate the hash of a file or a piece of data, you get this random string of characters:
 
 ```
-forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
-4f4dbcdd8f27fdf119b828acd79a9079e28f2c837dbb82e80bee24eddd14af07  LICENSE
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE.md 
+119ba12858fcf041fc43bb3331eaeaf313e1d01e278d5cc911fd2c60dc1c503f  LICENSE.md
 ```
 
-Here, I have called the SHA256 hash function on the Affero GPL `LICENSE` file in this repo. The result is displayed as a hexidecimal string, that is, each character can have one of 16 possible values, 0-9 and a-f. You can think of it like rolling a whole bunch of 16-sided dice, however, it's not random like dice are, its *pseudorandom*, meaning that given the same input file, if we execute the same hash function multiple times, it will return the same output. All the dice will land the same way every time:
+Here, I have called the SHA256 hash function on the GPLv3 `LICENSE.md` file in this repo. The result is displayed as a hexidecimal string, that is, each character can have one of 16 possible values, 0-9 and a-f. You can think of it like rolling a whole bunch of 16-sided dice, however, it's not random like dice are, its *pseudorandom*, meaning that given the same input file, if we execute the same hash function multiple times, it will return the same output. All the dice will land the same way every time:
 
 ```
-forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
-4f4dbcdd8f27fdf119b828acd79a9079e28f2c837dbb82e80bee24eddd14af07  LICENSE
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE.md 
+119ba12858fcf041fc43bb3331eaeaf313e1d01e278d5cc911fd2c60dc1c503f  LICENSE.md
 
-forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
-4f4dbcdd8f27fdf119b828acd79a9079e28f2c837dbb82e80bee24eddd14af07  LICENSE
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE.md 
+119ba12858fcf041fc43bb3331eaeaf313e1d01e278d5cc911fd2c60dc1c503f  LICENSE.md
 
-forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
-4f4dbcdd8f27fdf119b828acd79a9079e28f2c837dbb82e80bee24eddd14af07  LICENSE
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE.md 
+119ba12858fcf041fc43bb3331eaeaf313e1d01e278d5cc911fd2c60dc1c503f  LICENSE.md
 ```
 
 However, If I change the input, even if I only change it a tiny bit, say, append the letter `a` at the end of the file, it will completely change the way the result shakes out:
 
 ```
 # append the letter a to the end of the file
-forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ echo 'a' >> LICENSE 
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ echo 'a' >> LICENSE.md 
 
 # calculate the SHA256 hash again
-forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
-91cd044bf33adfaeea8be3feece42770c6721e385a5e7cfa05966665f006ec45  LICENSE
+forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE.md 
+67e0e2cc3429b799036bfa95e2bd7854a0e468939d6cb9d4a3e9d32c3b6615dc  LICENSE.md
 ```
 
 It's impossible to tell how the hash will be affected by changing the input... Well, unless you calculate the hash! 
