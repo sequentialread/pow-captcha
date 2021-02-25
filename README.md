@@ -179,7 +179,7 @@ This is the base url from which `captcha.js` will attempt to load additional res
 
 > 💬 *INFO* In our examples, we passed the captcha server URL down to the HTML page and used it as the value for this property.
 However, that's not required. The HTML page doesn't need to talk to the captcha server at all, it just needs to know where it can
-download the stylesheet css file and webworker javascript files. There is nothing stopping you from simply hosting those files on your own server or CDN and placing the corresponding URL into the `data-sqr-captcha-url` property.
+download the `captcha.css` and `proofOfWorker.js` files. There is nothing stopping you from simply hosting those files on your own server or CDN and placing the corresponding URL into the `data-sqr-captcha-url` property.
 
 #### `data-sqr-captcha-challenge`
 
