@@ -23,7 +23,9 @@ PoW does not require any 3rd party or authority to enforce rules, it is based on
 
 PoW works fairly well as a deterrent against spam, a PoW requirement makes sending high-volume spam computationally expensive.
 
-If you want to read more or see a concrete example, see [](What is Proof of Work? Extended Concrete Example)
+It is impossible to predict how long a given Proof of Work will take to calculate. It could take no time at all (got it on the first try), or it could take an abnormally long time (got unlucky and took forever to find the right hash). You can think of it like flipping coins until you get a certain # of heads in a row.  This **DOES** matter in terms of user interface and usability, so you will want to make sure that the difficulty is low enough that users are extremely unlikely to be turned away by an unlucky "takes forever" captcha.
+
+If you want to read more or see a concrete example, see [What is Proof of Work? Extended Concrete Example](#what-is-proof-of-work-extended-concrete-example) at the bottom of this file.
 
 # Sequence diagram
 
@@ -282,11 +284,21 @@ forest@thingpad:~/Desktop/git/sequentialread-pow-captcha$ sha256sum LICENSE
 91cd044bf33adfaeea8be3feece42770c6721e385a5e7cfa05966665f006ec45  LICENSE
 ```
 
-It's impossible to tell how the hash will be affected by changing the input.. Well, unless you calculate the hash! 
+It's impossible to tell how the hash will be affected by changing the input... Well, unless you calculate the hash! 
 This is related to the famous [Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) from computer science. 
 
-PoW is a game which exploits these interesting properties of hash functions. It works like this: I give you a file, and then you have to change the file (Add `a`s at the end, increment a number in the file, whatever you want to do) and recalculate the hash each time you change it, until you find a hash which ends in two zeros in a row. Or three zeros in a row, or four, whatever. Since there are 16 possible values for each character, each additional required zero divides your likelhood of finding the hash by 16.
+PoW is a game which exploits these interesting properties of hash functions. It works like this: I give you a file, and then you have to change the file (Add `a`s at the end, increment a number in the file, whatever you want to do) and recalculate the hash each time you change it, until you find a hash which ends in two zeros in a row. Or three zeros in a row, or four, whatever. Since there are 16 possible values for each character, each additional required zero divides your likelhood of finding the "winning" hash by 16.
 
 This is exactly how Bitcoin mining works, Bitcoin requires miners to search for SHA256 hashes that end in a rediculously unlikely number of zeros, like flipping 100 coins and getting 100 heads in a row.
 
-💥PoW! Captcha uses a different hash function called [Scrypt](https://en.wikipedia.org/wiki/Scrypt). Scrypt
+💥PoW! Captcha uses a different hash function called [Scrypt](https://en.wikipedia.org/wiki/Scrypt). Scrypt was designed to take an arbitrarily long amount of time to execute on a computer, and to be hard to optimize.
+
+A modified version of Scrypt is used by the crypto currency [Litecoin](https://en.wikipedia.org/wiki/Litecoin).
+
+Like I mentioned in the condensed "What is Proof of Work" section, because of this pseudorandom behaviour, we can't predict how long a given captcha will take to complete. The UI does have a "progress bar" but the behaviour of the bar is more related to probability than to progress. In fact, it displays the "probability that we should have found the answer already", which is related to the amount of work done so far, but it's not exactly a linear relationship. 
+
+Here is a screenshot of a plot I generated using WolframAlpha while I was developing this progress bar, given the formula for the progress bar's width:
+
+![wolfram alpha plot](readme/probability.png)
+
+This explains why the progress bar moves faster at the start & slows down once it starts approaching the end.
