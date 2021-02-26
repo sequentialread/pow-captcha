@@ -14,5 +14,6 @@ FROM alpine
 WORKDIR /app
 COPY --from=build /build/sequentialread-pow-captcha /app/sequentialread-pow-captcha
 COPY --from=build /build/static /app/static
+COPY PoW_Captcha_API_Tokens /app/PoW_Captcha_API_Tokens
 RUN chmod +x /app/sequentialread-pow-captcha
 ENTRYPOINT ["/app/sequentialread-pow-captcha"]
