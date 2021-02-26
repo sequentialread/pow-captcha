@@ -21,6 +21,9 @@ if [ "$rust_is_installed" == "0" ]; then
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  else
+      printf "exiting due to no rust compiler"
+      exit 1
   fi
 fi
 
@@ -36,6 +39,7 @@ npm_is_installed="$(which npm | wc -l)"
 
 if [ "$nodejs_is_installed" == "0" ] || [ "$npm_is_installed" == "0"  ]; then
   printf "nodejs and npm are required for the next step. Please install them manually 😇"
+  exit 1
 fi
 
 if [ ! -d node_modules ]; then
