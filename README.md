@@ -183,7 +183,9 @@ download the `captcha.css` and `proofOfWorker.js` files. There is nothing stoppi
 
 #### `data-sqr-captcha-challenge`
 
-This is one of the challenge strings returned by `GetChallenges`. It must be unique, each challenge can only be used once.
+Set this property to one of the challenge strings returned by `GetChallenges`. It must be unique, each challenge can only be used once.
+
+⚠️ **NOTE** that the element with the 3 `sqr-captcha-xyz` data properties **MUST** be placed **inside a form element**. This is required, to allow the  captcha to know which input elements it needs to trigger on. We only want the captcha to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
 
 #### `data-sqr-captcha-callback`
 
@@ -217,8 +219,6 @@ Then you would provide your callback like so:
 ```
 
 When `captcha.js` runs, if it finds an element with `data-sqr-captcha-challenge` & `data-sqr-captcha-callback`, but the callback function is not defined yet, it will print a warning message. If the callback is still not defined when the Proof of Work is completed, it will throw an error. 
-
-⚠️ **NOTE** that the element with the `sqr-captcha` data properties **MUST** be placed **inside a form element**. This is required, to allow the  captcha to know which input elements it needs to trigger on. We only want the captcha to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
 
 > 💬 *INFO* the element with the `sqr-captcha` data properties should probably be styled to have a very small font size. When I was designing the css for the captcha element, I made everything scale based on the font size (by using `em`). But because the page I was testing it on had a small font by default, I accidentally made it huge when it is rendered on a default HTML page. So for now you will want to make the font size of the element which contains it fairly small, like `10px` or `11px`. 
 
