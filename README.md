@@ -9,7 +9,7 @@ A proof of work based captcha similar to [friendly captcha](https://github.com/F
 
  1. [How it works](#how-it-works)
  1. [What is Proof of Work?](#what-is-proof-of-work)
- 1. [Sequence diagram](#sequence-diagram)
+ 1. [Overview sequence diagram](#overview-sequence-diagram)
  1. [Configuring](#configuring)
  1. [HTTP Captcha API](#http-captcha-api)
  1. [HTTP Admin API](#http-admin-api)
@@ -222,6 +222,24 @@ When `captcha.js` runs, if it finds an element with `data-sqr-captcha-challenge`
 
 > 💬 *INFO* the element with the `sqr-captcha` data properties should probably be styled to have a very small font size. When I was designing the css for the captcha element, I made everything scale based on the font size (by using `em`). But because the page I was testing it on had a small font by default, I accidentally made it huge when it is rendered on a default HTML page. So for now you will want to make the font size of the element which contains it fairly small, like `10px` or `11px`. 
 
+#### `window.sqrCaptchaInit`
+
+After everything is set up in the DOM, this function must be called to initialize the captcha(s). This function will throw an error if it is called more than once without calling `window.sqrCaptchaReset()` in between.
+
+For example:
+
+```
+<script>
+  window.sqrCaptchaInit();
+</script>
+```
+
+#### `window.sqrCaptchaReset`
+
+Resets the captchas, stops the webworkers, etc. Use this if you have updated the page and you need to call `window.sqrCaptchaInit` again.
+
+----
+
 # Running the example app
 
 The `example` folder in this repository contains an example app that demonstrates how to implement the 💥PoW! Captcha 
@@ -355,6 +373,7 @@ However, you have to make sure that you are using it right:
 
  - You must ensure that you only serve each challenge once, and
  - You must only call `GetChallenges` when necessary (when you are running out of challenges). If you call it too often you may accidentally expire otherwise-valid challenges before they can be verified. 
+ - Note that for high-traffic web sites where multiple requests can hit the server at once, you should probably use a [lock, mutex](https://git.sequentialread.com/forest/sequentialread-comments/src/af2f999134214412c1c6cf32c458e9b8a8c88289/main.go#L278), partitioning scheme, or other thread safe data structure to ensure that two concurrent requests don't end up trying to grab the same challenge from the list ([Software Race Condition](https://en.wikipedia.org/wiki/Race_condition#Software)).
 
 ---
 
@@ -385,7 +404,7 @@ There are two main important parts, the form and the javascript at the bottom:
   <script src="{{ .CaptchaURL }}/static/captcha.js"></script>
 ```
 
-⚠️ **NOTE** that the element with the `sqr-captcha` data properties is placed **inside a form element**. This is required, to allow the captcha to know which input elements it needs to trigger on. We only want the captcha to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
+⚠️ **NOTE** that the element with the `sqr-captcha` data properties is placed **inside a form element**. This is required because the captcha needs to know which input elements it should trigger on. We only want the captcha to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
 
 > 💬 *INFO* The double curly brace elements like `{{ .Challenge }}` are Golang string template interpolations.  They are specific to the example app & how it renders the page.
 

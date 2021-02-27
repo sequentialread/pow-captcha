@@ -6,14 +6,15 @@ ARG GO_BUILD_ARGS=
 RUN mkdir /build
 WORKDIR /build
 RUN apk add --update --no-cache ca-certificates git \
-  && go get golang.org/x/crypto/scrypt
-COPY . .
+  && go get golang.org/x/crypto/scrypt \ 
+  && go get github.com/pkg/errors
+COPY main.go main.go
 RUN  go build -v $GO_BUILD_ARGS -o /build/sequentialread-pow-captcha .
 
 FROM alpine
 WORKDIR /app
 COPY --from=build /build/sequentialread-pow-captcha /app/sequentialread-pow-captcha
-COPY --from=build /build/static /app/static
+COPY static /app/static
 COPY PoW_Captcha_API_Tokens /app/PoW_Captcha_API_Tokens
 RUN chmod +x /app/sequentialread-pow-captcha
 ENTRYPOINT ["/app/sequentialread-pow-captcha"]
