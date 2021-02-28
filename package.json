@@ -8,7 +8,7 @@
     "url": "git+https://git.sequentialread.com/forest/sequentialread-pow-captcha"
   },
   "author": "forest johnson <forest.n.johnson@gmail.com>",
-  "license": "GPLv3",
+  "license": "GPL-3.0-or-later",
   "bugs": {
     "url": "https://git.sequentialread.com/forest/sequentialread-pow-captcha/issues"
   },
@@ -26,5 +26,8 @@
   ],
   "files": [
     "static"
-  ]
+  ],
+  "directories": {
+    "static": "static"
+  }
 }
