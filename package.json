@@ -5,7 +5,7 @@
   "main": "static/captcha.js",
   "repository": {
     "type": "git",
-    "url": "git+https://git.sequentialread.com/forest/sequentialread-pow-captcha"
+    "url": "git+https://git.sequentialread.com/forest/sequentialread-pow-captcha.git"
   },
   "author": "forest johnson <forest.n.johnson@gmail.com>",
   "license": "GPL-3.0-or-later",
