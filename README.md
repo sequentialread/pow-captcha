@@ -224,7 +224,11 @@ When `captcha.js` runs, if it finds an element with `data-sqr-captcha-challenge`
 
 #### `window.sqrCaptchaInit`
 
-After everything is set up in the DOM, this function must be called to initialize the captcha(s). This function will throw an error if it is called more than once without calling `window.sqrCaptchaReset()` in between.
+The captcha event listeners, elements, css, & webworkers **won't be loaded until this function is called**.
+
+**`captcha.js` will call this function automatically** if there's at least one DOM element with `data-sqr-captcha-challenge` already when `captcha.js` loads. Otherwise, it is up to you to call this function after you render the DOM elements & add the `data-sqr-captcha-challenge` property to them.
+
+This function will throw an error if it is called more than once without calling `window.sqrCaptchaReset()` in between.
 
 For example:
 
@@ -238,7 +242,72 @@ For example:
 
 Resets the captchas, stops the webworkers, etc. Use this if you have updated the page and you need to call `window.sqrCaptchaInit` again.
 
+#### `window.sqrCaptchaInitDone`
+
+A boolean variable that `captcha.js` uses internally, so it can know if it has already been initialized or not.
+
 ----
+
+If you wanted to integrate 💥PoW! Captcha with a JavaScript driven front-end app, like a React-based app for example, you can install it via npm:
+
+`npm install git+https://git.sequentialread.com/forest/sequentialread-pow-captcha.git`
+
+and use it like this:
+
+```
+import {React, useEffect, useState} from 'react';
+
+...
+
+import '../node_modules/sequentialread-pow-captcha/static/captcha.css'
+import '../node_modules/sequentialread-pow-captcha/static/captcha.js'
+
+// assumes that this component  gets passed the captchaUrl and challenge as props 
+// these would be loaded/passed from the server somehow. Especially the challenge, it has to be unique each time.
+function MyComponent({captchaUrl, challenge}) {
+
+  // When the component is created, set a unique string to be used as the callback in the global namespace (window)
+  const [uniqueCallback] = useState(`pow-captcha-callback-${String(Math.random()).substring(6)}`);
+
+  // when the nonce is calculated, we will call setNonce
+  const [nonce, setNonce] = useState("");
+
+  // because this useEffect will cause the WebWorkers to be re-created each time, which could get expensive,
+  // you will want to ensure that this component does not somehow flicker in and out of existence 
+  useEffect(() => {
+    window[uniqueCallback] = (winningNonce) => {
+      setNonce(winningNonce);
+    }
+    
+    // Maybe less clear than the above, but JavaScript heads might enjoy this more:
+    // window[uniqueCallback] = setNonce;
+
+    if(window.sqrCaptchaInitDone) {
+      window.sqrCaptchaReset();
+    }
+    window.sqrCaptchaInit();
+  }, [uniqueCallback]);
+
+  return (
+    <div className="MyComponent">
+    ...
+
+      <form>
+          <input type="text" name="item" />
+          <input type="submit" disabled={nonce === ""} value="Add" />
+          <div className="captcha-container" 
+              data-sqr-captcha-url={captchaUrl} 
+              data-sqr-captcha-challenge={challenge} 
+              data-sqr-captcha-callback={uniqueCallback}>
+         </div>
+      </form>
+    </div>
+  );
+}
+
+```
+
+
 
 # Running the example app
 

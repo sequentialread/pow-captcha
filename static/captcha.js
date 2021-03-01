@@ -62,8 +62,17 @@
         //todo
       }
 
-      if(!document.querySelector(`link[href='${url}/static/captcha.css']`)) {
-        
+      const cssIsAlreadyLoaded = document.querySelector(`link[href='${url}/static/captcha.css']`);
+
+      cssIsAlreadyLoaded = cssIsAlreadyLoaded || Array.from(document.styleSheets).some(x => {
+        try {
+          return Array.from(x.rules).some(x => x.selectorText == ".sqr-captcha")
+        } catch (err) {
+          return false
+        }
+      });
+
+      if(!cssIsAlreadyLoaded) {
         const stylesheet = createElement(document.head, "link", {
           "rel": "stylesheet",
           "charset": "utf8",
