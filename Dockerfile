@@ -1,15 +1,15 @@
 
-FROM golang:1.15.2-alpine as build
+FROM golang:1.16-alpine as build
 ARG GOARCH=
 ARG GO_BUILD_ARGS=
 
 RUN mkdir /build
 WORKDIR /build
-RUN apk add --update --no-cache ca-certificates git \
-  && go get golang.org/x/crypto/scrypt \ 
-  && go get github.com/pkg/errors
+RUN apk add --update --no-cache ca-certificates git
+COPY go.mod go.mod
+COPY go.sum go.sum
 COPY main.go main.go
-RUN  go build -v $GO_BUILD_ARGS -o /build/sequentialread-pow-captcha .
+RUN  go get && go build -v $GO_BUILD_ARGS -o /build/sequentialread-pow-captcha .
 
 FROM alpine
 WORKDIR /app

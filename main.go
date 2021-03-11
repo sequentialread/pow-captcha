@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
+	errors "git.sequentialread.com/forest/pkg-errors"
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -159,7 +159,7 @@ func main() {
 
 		for _, fileInfo := range fileInfos {
 			filenameSplit := strings.Split(fileInfo.Name(), "_")
-			if len(filenameSplit) != 2 {
+			if len(filenameSplit) == 2 {
 				filepath := path.Join(apiTokensFolder, fileInfo.Name())
 				content, err := ioutil.ReadFile(filepath)
 				if err != nil {
