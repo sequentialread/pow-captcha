@@ -62,7 +62,7 @@
         //todo
       }
 
-      const cssIsAlreadyLoaded = document.querySelector(`link[href='${url}/static/captcha.css']`);
+      let cssIsAlreadyLoaded = document.querySelector(`link[href='${url}/static/captcha.css']`);
 
       cssIsAlreadyLoaded = cssIsAlreadyLoaded || Array.from(document.styleSheets).some(x => {
         try {
