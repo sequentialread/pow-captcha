@@ -250,7 +250,7 @@ A boolean variable that `captcha.js` uses internally, so it can know if it has a
 
 If you wanted to integrate 💥PoW! Captcha with a JavaScript driven front-end app, like a React-based app for example, you can install it via npm:
 
-`npm install git+https://git.sequentialread.com/forest/sequentialread-pow-captcha.git`
+`npm install git+https://git.sequentialread.com/forest/pow-captcha.git`
 
 and use it like this:
 

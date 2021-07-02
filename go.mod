@@ -1,4 +1,4 @@
-module git.sequentialread.com/forest/sequentialread-pow-captcha
+module git.sequentialread.com/forest/pow-captcha
 
 go 1.16
 

@@ -275,7 +275,7 @@
       "a", 
       {
         "class": "sqr-captcha-link",
-        "href": "https://git.sequentialread.com/forest/sequentialread-pow-captcha",
+        "href": "https://git.sequentialread.com/forest/pow-captcha",
         "target": "_blank"
       }, 
       "💥PoW! "

@@ -1,23 +1,23 @@
 {
-  "name": "sequentialread-pow-captcha",
+  "name": "pow-captcha",
   "version": "0.0.1",
   "description": "A proof of work based captcha similar to friendly captcha, but lightweight and FLOSS",
   "main": "static/captcha.js",
   "repository": {
     "type": "git",
-    "url": "git+https://git.sequentialread.com/forest/sequentialread-pow-captcha.git"
+    "url": "git+https://git.sequentialread.com/forest/pow-captcha.git"
   },
   "author": "forest johnson <forest.n.johnson@gmail.com>",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://git.sequentialread.com/forest/sequentialread-pow-captcha/issues"
+    "url": "https://git.sequentialread.com/forest/pow-captcha/issues"
   },
   "scripts": {
     "wasm-build": "cd wasm_build && ./build_wasm.sh",
     "wasm_build": "cd wasm_build && ./build_wasm.sh",
     "wasmbuild": "cd wasm_build && ./build_wasm.sh"
   },
-  "homepage": "https://git.sequentialread.com/forest/sequentialread-pow-captcha",
+  "homepage": "https://git.sequentialread.com/forest/pow-captcha",
   "keywords": [
     "captcha",
     "proof of work",
