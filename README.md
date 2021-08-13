@@ -2,6 +2,8 @@
 
 A proof of work based captcha similar to [mCaptcha](https://mcaptcha.org/).
 
+![screencast](readme/screencast.gif)
+
 Compared to mainstream captchas like recaptcha, hcaptcha, friendlycaptcha, this one is better for a few reasons:
 
  - It is lightweight & all dependencies are included; total front-end unminified gzipped file size is about 50KB.
@@ -14,7 +16,6 @@ Compared to other proof of work captchas like mCaptcha,  I believe that this one
   - It uses a multi-threaded [WASM (Web Assembly)](https://webassembly.org/) [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) running the [Scrypt hash function](https://en.wikipedia.org/wiki/Scrypt) instead of [SHA256](https://en.wikipedia.org/wiki/SHA-2). Because of this, it's less succeptible to hash-farming attacks.
   - It is optimized for production use; its API minimizes the number of requests and amount of latency that you have to add to your system.
 
-![screencast](readme/screencast.gif)
 
 
 ### Table of Contents
