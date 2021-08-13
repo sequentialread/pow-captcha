@@ -1,6 +1,18 @@
 # 💥PoW! Captcha
 
-A proof of work based captcha similar to [friendly captcha](https://github.com/FriendlyCaptcha/friendly-challenge), but lightweight, self-hosted and GPLv3 licensed. All dependencies are included, total front-end unminified gzipped file size is about 50KB.
+A proof of work based captcha similar to [mCaptcha](https://mcaptcha.org/).
+
+Compared to mainstream captchas like recaptcha, hcaptcha, friendlycaptcha, this one is better for a few reasons:
+
+ - It is lightweight & all dependencies are included; total front-end unminified gzipped file size is about 50KB.
+ - It is self-hosted. It does not spy on you or your users; you can tell because you run it on your own server, you wholly own and control it. 
+   - If you wish to use the one that I host instead of running it yourself, just let me know. Maybe we can work something out.
+ - It is fully GPLv3 licensed. It is legally structured to protect your freedom to own and operate the software in perpetuity. 
+
+Compared to other proof of work captchas like mCaptcha,  I believe that this one is better because:
+
+  - It uses a multi-threaded [WASM (Web Assembly)](https://webassembly.org/) [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) running the [Scrypt hash function](https://en.wikipedia.org/wiki/Scrypt) instead of [SHA256](https://en.wikipedia.org/wiki/SHA-2). Because of this, it's less succeptible to hash-farming attacks.
+  - It is optimized for production use; its API minimizes the number of requests and amount of latency that you have to add to your system.
 
 ![screencast](readme/screencast.gif)
 
@@ -107,7 +119,7 @@ restarted, or until GetChallenges has been called 10 more times. Each challenge 
 
 The difficultyLevel parameter specifies how many bits of difficulty the challenges should have.
 Each time you increase the difficultyLevel by 1, it doubles the amount of time the Proof of Work will take on average.
-The recommended value is 8. A difficulty of 8 will be solved quickly by a laptop or desktop computer, and solved within 60 seconds or so by a cell phone.
+The recommended value is 5. A difficulty of 5 will be solved quickly by a laptop or desktop computer, and solved within 60 seconds or so by a cell phone.
 
 
 #### `POST /Verify?challenge=<string>&nonce=<string>`
