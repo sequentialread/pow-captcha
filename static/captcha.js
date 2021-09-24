@@ -83,7 +83,7 @@
         renderCaptcha(element);
       }
   
-      const onFormWasTouched = () => {
+      window.sqrCaptchaTrigger = () => {
         
         const challenge = element.dataset.sqrCaptchaChallenge;
         if(!challengesMap[challenge]) {
@@ -123,8 +123,8 @@
                       .concat(Array.from(form.querySelectorAll("textarea")));
       
       inputElements.forEach(inputElement => {
-        inputElement.onchange = onFormWasTouched;
-        inputElement.onkeydown = onFormWasTouched;
+        inputElement.onchange = () => window.sqrCaptchaTrigger();
+        inputElement.onkeydown = () => window.sqrCaptchaTrigger();
       });
     });
   
@@ -146,7 +146,7 @@
       );
 
       let webWorkers;
-      webWorkers = [...Array(numberOfWebWorkersToCreate)].map(x => {
+      webWorkers = [...Array(numberOfWebWorkersToCreate)].map((_, i) => {
         const webWorker = new Worker(webWorkerPointerDataURL);
         webWorker.onmessage = function(e) {
           const challengeState = challengesMap[e.data.challenge]
@@ -161,45 +161,48 @@
             }
             challengeState.attempts += e.data.attempts;
           } else if(e.data.type == "success") {
-
-            challengeState.done = true;
-            clearInterval(challengeState.updateProgressInterval);
-
-            const element = challengeState.element;
-            const progressBar = element.querySelector(".sqr-captcha-progress-bar");
-            const checkmark = element.querySelector(".sqr-checkmark-icon");
-            const gears = element.querySelector(".sqr-gears-icon");
-            const bestHashElement = element.querySelector(".sqr-captcha-best-hash");
-            const description = element.querySelector(".sqr-captcha-description");
-            challengeState.smallestHash = e.data.smallestHash;
-            bestHashElement.textContent = getHashProgressText(challengeState);
-            bestHashElement.classList.add("sqr-captcha-best-hash-done");
-            checkmark.style.display = "block";
-            checkmark.style.animationPlayState = "running";
-            gears.style.display = "none";
-            progressBar.style.width = "100%";
-
-            description.innerHTML = "";
-            createElement(
-              description, 
-              "a", 
-              {"href": "https://en.wikipedia.org/wiki/Proof_of_work"}, 
-              "Proof of Work"
-            );
-            appendFragment(description, " complete, you may now submit your post. ");
-            createElement(description, "br");
-            appendFragment(description, "This an accessible & privacy-respecting anti-spam measure. ");
-            
-            webWorkers.forEach(x => x.postMessage({stop: "STOP"}));
-
-            const callback = getCallbackFromGlobalNamespace(element.dataset.sqrCaptchaCallback);
-            if(!callback) {
-              console.error(`error: data-sqr-captcha-callback '${element.dataset.sqrCaptchaCallback}' `
-                           + "is not defined in the global namespace!");
+            if(!challengeState.done) {
+              challengeState.done = true;
+              clearInterval(challengeState.updateProgressInterval);
+  
+              const element = challengeState.element;
+              const progressBar = element.querySelector(".sqr-captcha-progress-bar");
+              const checkmark = element.querySelector(".sqr-checkmark-icon");
+              const gears = element.querySelector(".sqr-gears-icon");
+              const bestHashElement = element.querySelector(".sqr-captcha-best-hash");
+              const description = element.querySelector(".sqr-captcha-description");
+              challengeState.smallestHash = e.data.smallestHash;
+              bestHashElement.textContent = getHashProgressText(challengeState);
+              bestHashElement.classList.add("sqr-captcha-best-hash-done");
+              checkmark.style.display = "block";
+              checkmark.style.animationPlayState = "running";
+              gears.style.display = "none";
+              progressBar.style.width = "100%";
+  
+              description.innerHTML = "";
+              createElement(
+                description, 
+                "a", 
+                {"href": "https://en.wikipedia.org/wiki/Proof_of_work"}, 
+                "Proof of Work"
+              );
+              appendFragment(description, " complete, you may now submit your post. ");
+              createElement(description, "br");
+              appendFragment(description, "This an accessible & privacy-respecting anti-spam measure. ");
+              
+              webWorkers.forEach(x => x.postMessage({stop: "STOP"}));
+  
+              const callback = getCallbackFromGlobalNamespace(element.dataset.sqrCaptchaCallback);
+              if(!callback) {
+                console.error(`error: data-sqr-captcha-callback '${element.dataset.sqrCaptchaCallback}' `
+                             + "is not defined in the global namespace!");
+              } else {
+                console.log(`firing callback for challenge ${e.data.challenge} w/ nonce ${e.data.nonce}, smallestHash: ${e.data.smallestHash}, difficulty: ${e.data.difficulty}`);
+                callback(e.data.nonce);
+              }
             } else {
-              callback(e.data.nonce);
+              console.log("success recieved twice");
             }
-
           } else if(e.data.type == "error") {
             console.error(`error: webworker errored out: '${e.data.message}'`);
           } else {

@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/pkg/errors"
+	errors "git.sequentialread.com/forest/pkg-errors"
 )
 
 var httpClient *http.Client
