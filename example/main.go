@@ -26,7 +26,6 @@ var items []string
 // 5 bits of difficulty, 1 in 2^6 (1 in 32) tries will succeed on average.
 //
 // 8 bits of difficulty would be ok for apps that are never used on mobile phones, 6 is better suited for mobile apps
-//
 const captchaDifficultyLevel = 5
 
 func main() {
@@ -55,6 +54,8 @@ func main() {
 	if err != nil {
 		panic(errors.Wrap(err, "can't start the app because can't open the template file. Are you in the right directory? "))
 	}
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../static/"))))
 
 	http.HandleFunc("/", func(responseWriter http.ResponseWriter, request *http.Request) {
 

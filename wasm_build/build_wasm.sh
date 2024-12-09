@@ -29,26 +29,30 @@ fi
 
 if [ ! -d pkg ]; then
   printf "running Makefile for MyEtherWallet/scrypt-wasm... \n"
-  make
+	rustup target add wasm32-unknown-unknown
+	cargo install wasm-pack --force
+	wasm-pack build --target no-modules
 fi
 
 cd ../
 
-nodejs_is_installed="$(which node | wc -l)"
-npm_is_installed="$(which npm | wc -l)"
+cp scrypt-wasm/pkg/scrypt_wasm_bg.wasm ../static/
 
-if [ "$nodejs_is_installed" == "0" ] || [ "$npm_is_installed" == "0"  ]; then
-  printf "nodejs and npm are required for the next step. Please install them manually 😇"
-  exit 1
-fi
+echo '
+// THIS FILE IS GENERATED AUTOMATICALLY
+// Dont edit this file by hand. 
+// Either edit proofOfWorkerStub.js or edit the build located in the wasm_build folder.
+' > ../static/proofOfWorker.js
 
-if [ ! -d node_modules ]; then
-  printf "running npm install \n"
-  npm install
-fi
+cat ../proofOfWorkerStub.js | tail -n +6  >> ../static/proofOfWorker.js
 
-node build_wasm_webworker.js > "../static/proofOfWorker.js"
+cat scrypt-wasm/pkg/scrypt_wasm.js >> ../static/proofOfWorker.js
 
-printf "\n\nbuilt ../static/proofOfWorker.js successfully!\n\n"
+# see: https://rustwasm.github.io/docs/wasm-bindgen/examples/without-a-bundler.html
+echo '
+scrypt = wasm_bindgen.scrypt;
+scryptPromise = wasm_bindgen({module_or_path: "/static/scrypt.wasm"});
 
+' >> ../static/proofOfWorker.js
 
+echo "Build successful!"

@@ -1,7 +1,10 @@
-
 // IN ORDER FOR CHANGES TO THIS FILE TO "TAKE" AND BE USED IN THE APP, THE BUILD IN wasm_build HAS TO BE RE-RUN
-
 // scrypt and scryptPromise will be filled out by js code that gets appended below this script by the wasm_build process
+
+// --- snip ---
+
+
+
 let scrypt;
 let scryptPromise;
 

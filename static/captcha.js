@@ -135,19 +135,20 @@
   
     if(url) {
 
-      // https://stackoverflow.com/questions/21913673/execute-web-worker-from-different-origin/62914052#62914052
-      const webWorkerUrlWhichIsProbablyCrossOrigin = `${url}/static/proofOfWorker.js`;
+      // // https://stackoverflow.com/questions/21913673/execute-web-worker-from-different-origin/62914052#62914052
+      // const webWorkerUrlWhichIsProbablyCrossOrigin = `${url}/static/proofOfWorker.js`;
 
-      const webWorkerPointerDataURL = URL.createObjectURL( 
-        new Blob(
-          [ `importScripts( "${ webWorkerUrlWhichIsProbablyCrossOrigin }" );` ], 
-          { type: "text/javascript" }
-        )
-      );
+      // const webWorkerPointerDataURL = URL.createObjectURL( 
+      //   new Blob(
+      //     [ `importScripts( "${ webWorkerUrlWhichIsProbablyCrossOrigin }" );` ], 
+      //     { type: "text/javascript" }
+      //   )
+      // );
 
+      // return
       let webWorkers;
       webWorkers = [...Array(numberOfWebWorkersToCreate)].map((_, i) => {
-        const webWorker = new Worker(webWorkerPointerDataURL);
+        const webWorker = new Worker('/static/proofOfWorker.js');
         webWorker.onmessage = function(e) {
           const challengeState = challengesMap[e.data.challenge]
           if(!challengeState) {
@@ -212,7 +213,7 @@
         return webWorker;
       });
 
-      URL.revokeObjectURL(webWorkerPointerDataURL);
+      // URL.revokeObjectURL(webWorkerPointerDataURL);
   
       proofOfWorker = { 
         postMessage: arg => webWorkers.forEach((x, i) => {
