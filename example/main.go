@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -25,8 +26,8 @@ var items []string
 
 // 5 bits of difficulty, 1 in 2^6 (1 in 32) tries will succeed on average.
 //
-// 8 bits of difficulty would be ok for apps that are never used on mobile phones, 6 is better suited for mobile apps
-const powDifficultyLevel = 5
+// 7 bits of difficulty would be ok for apps that are never used on mobile phones, 5 is better suited for mobile apps
+const powDifficultyLevel = 7
 
 func main() {
 
@@ -50,7 +51,7 @@ func main() {
 		panic(errors.Wrap(err, "can't start the app because could not loadChallenges():"))
 	}
 
-	_, err = ioutil.ReadFile("index.html")
+	_, err = os.ReadFile("index.html")
 	if err != nil {
 		panic(errors.Wrap(err, "can't start the app because can't open the template file. Are you in the right directory? "))
 	}
@@ -62,7 +63,7 @@ func main() {
 		// The user submitted a POST request, attempting to add a new item to the list
 		if request.Method == "POST" {
 
-			// Ask the botdeterrent server if the user's proof of work result is legit,
+			// Ask the bot deterrent server if the user's proof of work result is legit,
 			// and if not, return HTTP 400 Bad Request
 			err := request.ParseForm()
 			if err == nil {
@@ -77,6 +78,9 @@ func main() {
 
 			// Validation passed, add the user's new item to the list
 			items = append(items, request.Form.Get("item"))
+
+			http.Redirect(responseWriter, request, "/", http.StatusFound)
+			return
 		}
 
 		// if it looks like we will run out of challenges soon, then kick off a goroutine to go get more in the background
@@ -87,12 +91,12 @@ func main() {
 		}
 
 		// if we somehow completely ran out of challenges, load more synchronously
-		if powChallenges == nil || len(powChallenges) == 0 {
+		if len(powChallenges) == 0 {
 			err = loadChallenges(apiToken)
 			if err != nil {
-				log.Printf("loading botdeterrent challenges failed: %v", err)
+				log.Printf("loading bot deterrent challenges failed: %v", err)
 				responseWriter.WriteHeader(500)
-				responseWriter.Write([]byte("botdeterrent api error"))
+				responseWriter.Write([]byte("bot deterrent api error"))
 				return
 			}
 		}
@@ -183,7 +187,7 @@ func loadChallenges(apiToken string) error {
 
 	if response.StatusCode != 200 {
 		return fmt.Errorf(
-			"load proof of work botdeterrent challenges api returned http %d: %s",
+			"load proof of work bot deterrent challenges api returned http %d: %s",
 			response.StatusCode, string(responseBytes),
 		)
 	}
@@ -194,7 +198,7 @@ func loadChallenges(apiToken string) error {
 	}
 
 	if len(powChallenges) == 0 {
-		return errors.New("proof of work botdeterrent challenges api returned empty array")
+		return errors.New("proof of work bot deterrent challenges api returned empty array")
 	}
 
 	return nil
@@ -224,7 +228,13 @@ func validatePow(apiToken, challenge, nonce string) error {
 	}
 
 	if response.StatusCode != 200 {
-		return errors.New("proof of work botdeterrent validation failed")
+		bodyString := "http read error"
+		bytez, err := io.ReadAll(response.Body)
+		if err == nil {
+			bodyString = string(bytez)
+		}
+		log.Printf("validation failed: HTTP %d: %s\n", response.StatusCode, bodyString)
+		return errors.New("PoW bot deterrent validation failed")
 	}
 	return nil
 }

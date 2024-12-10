@@ -199,7 +199,7 @@ download the `pow-bot-deterrent.css` and `proofOfWorker.js` files. There is noth
 
 Set this property to one of the challenge strings returned by `GetChallenges`. It must be unique, each challenge can only be used once.
 
-⚠️ **NOTE** that the element with the 3 `pow-botdeterrent-xyz` data properties **MUST** be placed **inside a form element**. This is required, to allow the  bot deterrent to know which input elements it needs to trigger on. We only want it to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
+⚠️ **NOTE** that the element with the 3 `pow-bot-deterrent-xyz` data properties **MUST** be placed **inside a form element**. This is required, to allow the  bot deterrent to know which input elements it needs to trigger on. We only want it to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
 
 #### `data-pow-bot-deterrent-callback`
 
@@ -234,7 +234,7 @@ Then you would provide your callback like so:
 
 When `pow-bot-deterrent.js` runs, if it finds an element with `data-pow-bot-deterrent-challenge` & `data-pow-bot-deterrent-callback`, but the callback function is not defined yet, it will print a warning message. If the callback is still not defined when the Proof of Work is completed, it will throw an error. 
 
-> 💬 *INFO* the element with the `pow-botdeterrent` data properties should probably be styled to have a very small font size. When I was designing the css for the bot deterrent element, I made everything scale based on the font size (by using `em`). But because the page I was testing it on had a small font by default, I accidentally made it huge when it is rendered on a default HTML page. So for now you will want to make the font size of the element which contains it fairly small, like `10px` or `11px`. 
+> 💬 *INFO* the element with the `pow-bot-deterrent` data properties should probably be styled to have a very small font size. When I was designing the css for the bot deterrent element, I made everything scale based on the font size (by using `em`). But because the page I was testing it on had a small font by default, I accidentally made it huge when it is rendered on a default HTML page. So for now you will want to make the font size of the element which contains it fairly small, like `10px` or `11px`. 
 
 #### `window.botBotDeterrentInit`
 
@@ -309,7 +309,7 @@ function MyComponent({botDeterrentURL, challenge}) {
       <form>
           <input type="text" name="item" />
           <input type="submit" disabled={nonce === ""} value="Add" />
-          <div className="botdeterrent-container" 
+          <div className="bot-deterrent-container" 
               data-pow-bot-deterrent-url={botDeterrentURL} 
               data-pow-bot-deterrent-challenge={challenge} 
               data-pow-bot-deterrent-callback={uniqueCallback}>
@@ -469,7 +469,7 @@ There are two main important parts, the form and the javascript at the bottom:
           <input type="hidden" name="challenge" value="{{ .Challenge }}" />
           <input type="hidden" name="nonce" />
           <input type="submit" disabled="true" value="Add" />
-          <div class="botdeterrent-container" 
+          <div class="bot-deterrent-container" 
               data-pow-bot-deterrent-url="{{ .PowAPIURL }}" 
               data-pow-bot-deterrent-challenge="{{ .Challenge }}" 
               data-pow-bot-deterrent-callback="myPowCallback">
@@ -487,7 +487,7 @@ There are two main important parts, the form and the javascript at the bottom:
   <script src="{{ .PowAPIURL }}/static/pow-bot-deterrent.js"></script>
 ```
 
-⚠️ **NOTE** that the element with the `pow-botdeterrent` data properties is placed **inside a form element**. This is required because the bot deterrent needs to know which input elements it should trigger on. We only want it to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
+⚠️ **NOTE** that the element with the `pow-bot-deterrent` data properties is placed **inside a form element**. This is required because the bot deterrent needs to know which input elements it should trigger on. We only want it to trigger when the user actually intends to submit the form; otherwise we are wasting a lot of their CPU cycles for no reason!
 
 > 💬 *INFO* The double curly brace elements like `{{ .Challenge }}` are Golang string template interpolations.  They are specific to the example app & how it renders the page.
 
@@ -496,12 +496,12 @@ property. It will then validate each element to make sure it also has the `data-
 
 When the Proof of Work finishes, `pow-bot-deterrent.js` will call the function specified by `data-pow-bot-deterrent-callback`, passing the winning nonce as the first argument, or throw an error if that function is not defined.
 
-> 💬 *INFO* the element with the `pow-botdeterrent` data properties also has a class that *WE* defined, called `botdeterrent-container`.
+> 💬 *INFO* the element with the `pow-bot-deterrent` data properties also has a class that *WE* defined, called `bot-deterrent-container`.
 This class has a very small font size. When I was designing the css for the bot deterrent element, I made everything scale based on the font size (by using `em`). But because the page I was testing it on had a small font by default, I accidentally made it huge when it is rendered on a default HTML page. So for now you will want to make the font size of the element which contains it fairly small. 
 
 ```
 <style>
-    .botdeterrent-container {
+    .bot-deterrent-container {
       margin-top: 1em;
       font-size: 10px;
     }

@@ -48,7 +48,7 @@ func main() {
 	batchSize := 1000
 	deprecateAfterBatches := 10
 	portNumber := 2370
-	scryptCPUAndMemoryCost := 4096
+	scryptCPUAndMemoryCost := 16384
 	batchSizeEnv := os.ExpandEnv("$POW_BOT_DETERRENT_BATCH_SIZE")
 	deprecateAfterBatchesEnv := os.ExpandEnv("$POW_BOT_DETERRENT_DEPRECATE_AFTER_BATCHES")
 	portNumberEnv := os.ExpandEnv("$POW_BOT_DETERRENT_LISTEN_PORT")
@@ -277,8 +277,8 @@ func main() {
 			for j := 0; j < len(difficultyBytes); j++ {
 				difficultyByte := byte(0)
 				for k := 0; k < 8; k++ {
-					currentBitIndex := (len(difficultyBytes) * 8) - (j*8 + k)
-					if currentBitIndex > difficultyLevel {
+					currentBitIndex := (j*8 + (7 - k))
+					if currentBitIndex+1 > difficultyLevel {
 						difficultyByte = difficultyByte | 1<<k
 					}
 				}
@@ -400,7 +400,10 @@ func main() {
 		}
 
 		hashHex := hex.EncodeToString(hash)
-		if hashHex[len(hashHex)-len(challenge.Difficulty):] > challenge.Difficulty {
+		endOfHash := hashHex[len(hashHex)-len(challenge.Difficulty):]
+
+		log.Printf("endOfHash: %s <= Difficulty: %s", endOfHash, challenge.Difficulty)
+		if endOfHash > challenge.Difficulty {
 			errorMessage := fmt.Sprintf(
 				"400 bad request: nonce given by url param ?nonce=%s did not result in a hash that meets the required difficulty",
 				nonceHex,

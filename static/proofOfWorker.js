@@ -9,7 +9,7 @@ let scrypt;
 let scryptPromise;
 
 let working = false;
-const batchSize = 8;
+const batchSize = 4;
 
 onmessage = function(e) {
   if(e.data.stop) {
@@ -92,8 +92,6 @@ onmessage = function(e) {
         challenge.paralellization, 
         challenge.keyLength
       );
-
-      //console.log(i.toString(16), hashHex);
   
       const endOfHash = hashHex.substring(hashHex.length-challenge.difficulty.length);
       if(endOfHash < smallestHash) {

@@ -1,4 +1,4 @@
-.pow-botdeterrent {
+.pow-bot-deterrent {
   background-color: #ddd;
   border: 1px solid #9359fa;
   border-radius: 1em;
@@ -10,7 +10,7 @@
   min-width: 37em;
 }
 
-.pow-botdeterrent-link {
+.pow-bot-deterrent-link {
   color: #452775;
   font-weight: bold;
   text-decoration: underline;
@@ -19,28 +19,28 @@
 }
 
 @media screen and (max-width: 410px) {
-  .pow-botdeterrent {
+  .pow-bot-deterrent {
     min-width: 25em;
   }
-  .pow-botdeterrent-icon {
+  .pow-bot-deterrent-icon {
     height: 3em;
   }
 }
 
 @media screen and (max-width: 380px) {
-	.pow-botdeterrent-link span {
+	.pow-bot-deterrent-link span {
 		display: none;
   }
 }
 
-.pow-botdeterrent-link:hover,
-.pow-botdeterrent-link:active,
-.pow-botdeterrent-link:visited {
+.pow-bot-deterrent-link:hover,
+.pow-bot-deterrent-link:active,
+.pow-bot-deterrent-link:visited {
   color: #452775;
 }
 
 
-.pow-botdeterrent-row {
+.pow-bot-deterrent-row {
   display: inline-flex;
   flex-direction: row;
   align-content: center;
@@ -48,14 +48,14 @@
   justify-content: space-between;
 }
 
-.pow-botdeterrent-icon-container {
+.pow-bot-deterrent-icon-container {
   margin-left: 1.5em;
   margin-top: 0.2em;
   margin-bottom: -2em;
   margin-right: 0.2em;
 }
 
-.pow-botdeterrent-best-hash {
+.pow-bot-deterrent-best-hash {
   font-family: monospace;
   background: #585a29;
   color: #f6ff72;
@@ -70,17 +70,17 @@
   float: right;
 }
 
-.pow-botdeterrent-best-hash-done {
+.pow-bot-deterrent-best-hash-done {
   background: #3b6262;
   color: #53f65d;
 }
 
-.pow-botdeterrent-description {
+.pow-bot-deterrent-description {
   margin-top: 1em;
   font-size: 1em;
 }
 
-.pow-botdeterrent-progress-bar-container {
+.pow-bot-deterrent-progress-bar-container {
   border-radius: 1em;
   background: #444;
   height: 1em;
@@ -90,7 +90,7 @@
   
 }
 
-.pow-botdeterrent-progress-bar {
+.pow-bot-deterrent-progress-bar {
   background: #f6ff72;
   height: 1em;
   width: 0;
@@ -98,11 +98,11 @@
   transition: width 0.5s ease-in-out;
 }
 
-.pow-botdeterrent-icon {
+.pow-bot-deterrent-icon {
   height: 4em;
 }
 
-.pow-botdeterrent-hidden {
+.pow-bot-deterrent-hidden {
   display: none;
 }
 

@@ -20,12 +20,11 @@
 
     challenges.forEach(element => {
   
-      data-pow-bot-deterrent
       if(!url) {
-        if(!element.dataset.powBotDeterrentAPIURL) {
+        if(!element.dataset.powBotDeterrentUrl) {
           console.error("error: element with data-pow-bot-deterrent-challenge property is missing the data-pow-bot-deterrent-url property");
         }
-        url = element.dataset.sqrpowAPIURL;
+        url = element.dataset.powBotDeterrentUrl;
         if(url.endsWith("/")) {
           url = url.substring(0, url.length-1)
         }
@@ -67,7 +66,7 @@
 
       cssIsAlreadyLoaded = cssIsAlreadyLoaded || Array.from(document.styleSheets).some(x => {
         try {
-          return Array.from(x.rules).some(x => x.selectorText == ".pow-botdeterrent")
+          return Array.from(x.rules).some(x => x.selectorText == ".pow-bot-deterrent")
         } catch (err) {
           return false
         }
@@ -93,9 +92,9 @@
             attempts: 0,
             startTime: new Date().getTime(),
           };
-          const progressBarContainer = element.querySelector(".pow-botdeterrent-progress-bar-container");
+          const progressBarContainer = element.querySelector(".pow-bot-deterrent-progress-bar-container");
           progressBarContainer.style.display = "block";
-          const mainElement = element.querySelector(".pow-botdeterrent");
+          const mainElement = element.querySelector(".pow-bot-deterrent");
           mainElement.style.display = "inline-block";
           const gears = element.querySelector(".pow-gears-icon");
           gears.style.display = "block";
@@ -108,8 +107,8 @@
                 challengesMap[challenge].attempts
               );
               const element = challengesMap[challenge].element;
-              const progressBar = element.querySelector(".pow-botdeterrent-progress-bar");
-              const bestHashElement = element.querySelector(".pow-botdeterrent-best-hash");
+              const progressBar = element.querySelector(".pow-bot-deterrent-progress-bar");
+              const bestHashElement = element.querySelector(".pow-bot-deterrent-best-hash");
               bestHashElement.textContent = getHashProgressText(challengesMap[challenge]);
               progressBar.style.width = `${probabilityOfSuccessSoFar*100}%`;
             }
@@ -168,14 +167,14 @@
               clearInterval(challengeState.updateProgressInterval);
   
               const element = challengeState.element;
-              const progressBar = element.querySelector(".pow-botdeterrent-progress-bar");
+              const progressBar = element.querySelector(".pow-bot-deterrent-progress-bar");
               const checkmark = element.querySelector(".pow-checkmark-icon");
               const gears = element.querySelector(".pow-gears-icon");
-              const bestHashElement = element.querySelector(".pow-botdeterrent-best-hash");
-              const description = element.querySelector(".pow-botdeterrent-description");
+              const bestHashElement = element.querySelector(".pow-bot-deterrent-best-hash");
+              const description = element.querySelector(".pow-bot-deterrent-description");
               challengeState.smallestHash = e.data.smallestHash;
               bestHashElement.textContent = getHashProgressText(challengeState);
-              bestHashElement.classList.add("pow-botdeterrent-best-hash-done");
+              bestHashElement.classList.add("pow-bot-deterrent-best-hash-done");
               checkmark.style.display = "block";
               checkmark.style.animationPlayState = "running";
               gears.style.display = "none";
@@ -186,11 +185,11 @@
                 description, 
                 "a", 
                 {"href": "https://en.wikipedia.org/wiki/Proof_of_work"}, 
-                "Proof of Work"
+                "PoW"
               );
-              appendFragment(description, " complete, you may now submit your post. ");
+              appendFragment(description, " complete, you may continue.");
               createElement(description, "br");
-              appendFragment(description, "This an accessible & privacy-respecting anti-spam measure. ");
+              appendFragment(description, "Privacy-respecting anti-spam measure.");
               
               webWorkers.forEach(x => x.postMessage({stop: "STOP"}));
   
@@ -256,7 +255,7 @@
       hashesPerSecond = `[${leftPad(Math.round(hashesPerSecondFloat), 3)}h/s]`;
     }
 
-    return `${hashesPerSecond} ..${challengeState.smallestHash} → ..${challengeState.difficulty}`;
+    return `${hashesPerSecond} ${challengeState.smallestHash} < ${challengeState.difficulty}`;
   }
 
   function leftPad (str, max) {
@@ -271,24 +270,22 @@
 
     parent.innerHTML = "";
 
-    const main = createElement(parent, "div", {"class": "pow-botdeterrent pow-botdeterrent-hidden"});
-    const mainRow = createElement(main, "div", {"class": "pow-botdeterrent-row"});
+    const main = createElement(parent, "div", {"class": "pow-bot-deterrent pow-bot-deterrent-hidden"});
+    const mainRow = createElement(main, "div", {"class": "pow-bot-deterrent-row"});
     const mainColumn = createElement(mainRow, "div");
-    const headerRow = createElement(mainColumn, "div");
     const headerLink = createElement(
-      headerRow, 
+      mainColumn, 
       "a", 
       {
-        "class": "pow-botdeterrent-link",
+        "class": "pow-bot-deterrent-link",
         "href": "https://git.sequentialread.com/forest/pow-bot-deterrent",
         "target": "_blank"
       }, 
       "💥PoW! "
     );
     createElement(headerLink, "span", null, "Bot Deterrent");
-    createElement(headerRow, "div", {"class": "pow-botdeterrent-best-hash"}, "loading...");
-    const description = createElement(mainColumn, "div", {"class": "pow-botdeterrent-description"});
-    appendFragment(description, "Please wait for your browser to calculate a ");
+    const description = createElement(mainColumn, "div", {"class": "pow-bot-deterrent-description"});
+    appendFragment(description, "Creating ");
     createElement(
       description, 
       "a", 
@@ -297,12 +294,14 @@
     );
     appendFragment(description, ". ");
     createElement(description, "br");
-    appendFragment(description, "This an accessible & privacy-respecting anti-spam measure. ");
+    appendFragment(description, "Privacy-respecting anti-spam measure.");
+    const bestHashContainer = createElement(mainRow, "div");
+    createElement(bestHashContainer, "div", {"class": "pow-bot-deterrent-best-hash"}, "loading...");
     const progressBarContainer = createElement(main, "div", {
-      "class": "pow-botdeterrent-progress-bar-container pow-botdeterrent-hidden"
+      "class": "pow-bot-deterrent-progress-bar-container pow-bot-deterrent-hidden"
     });
-    createElement(progressBarContainer, "div", {"class": "pow-botdeterrent-progress-bar"});
-    const iconContainer = createElement(mainRow, "div", {"class": "pow-botdeterrent-icon-container"});
+    createElement(progressBarContainer, "div", {"class": "pow-bot-deterrent-progress-bar"});
+    const iconContainer = createElement(mainRow, "div", {"class": "pow-bot-deterrent-icon-container"});
     
     
     const checkmarkIcon = createElementNS(iconContainer, svgXMLNS, "svg", { 
@@ -310,7 +309,7 @@
       "xml:space": [xmlSpaceXMLNS, 'preserve'],
       "version": "1.1",
       "viewBox": "0 0 512 512",
-      "class": "pow-checkmark-icon pow-botdeterrent-icon pow-botdeterrent-hidden"
+      "class": "pow-checkmark-icon pow-bot-deterrent-icon pow-bot-deterrent-hidden"
     });
     createElementNS(checkmarkIcon, svgXMLNS, "polyline", {
       "class": "pow-checkmark-icon-checkmark",
@@ -326,7 +325,7 @@
       "xml:space": [xmlSpaceXMLNS, 'preserve'],
       "version": "1.1",
       "viewBox": "-30 -5 250 223",
-      "class": "pow-gears-icon pow-botdeterrent-icon pow-botdeterrent-hidden"
+      "class": "pow-gears-icon pow-bot-deterrent-icon pow-bot-deterrent-hidden"
     });
     createElementNS(gearsIcon, svgXMLNS, "path", { 
       "class": "pow-gears-icon-gear-large",

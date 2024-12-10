@@ -5,7 +5,7 @@
   <title>📋 Todo List</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    .botdeterrent-container {
+    .bot-deterrent-container {
       margin-top: 1em;
       font-size: 10px;
     }
@@ -32,7 +32,7 @@
           <input type="hidden" name="challenge" value="{{ .Challenge }}" />
           <input type="hidden" name="nonce" />
           <input type="submit" disabled="true" value="Add" />
-          <div class="botdeterrent-container" 
+          <div class="bot-deterrent-container" 
               data-pow-bot-deterrent-url="http://localhost:8080/" 
               data-pow-bot-deterrent-challenge="{{ .Challenge }}" 
               data-pow-bot-deterrent-callback="myPowCallback">
@@ -47,7 +47,7 @@
       document.querySelector("form input[type='submit']").disabled = false;
     };
   </script>
-  <script src="/static/botdeterrent.js"></script>
+  <script src="/static/pow-bot-deterrent.js"></script>
   <!-- <script src='./static/scrypt_wasm.js'></script>
   <script>
     const { scrypt } = wasm_bindgen;
