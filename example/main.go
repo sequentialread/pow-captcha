@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,16 +19,15 @@ import (
 )
 
 var httpClient *http.Client
-var captchaAPIURL *url.URL
-var captchaChallenges []string
+var powAPIURL *url.URL
+var powChallenges []string
 
 var items []string
 
 // 5 bits of difficulty, 1 in 2^6 (1 in 32) tries will succeed on average.
 //
-// 8 bits of difficulty would be ok for apps that are never used on mobile phones, 6 is better suited for mobile apps
-//
-const captchaDifficultyLevel = 5
+// 7 bits of difficulty would be ok for apps that are never used on mobile phones, 5 is better suited for mobile apps
+const powDifficultyLevel = 7
 
 func main() {
 
@@ -35,37 +35,39 @@ func main() {
 		Timeout: time.Second * time.Duration(5),
 	}
 
-	apiToken := os.ExpandEnv("$CAPTCHA_API_TOKEN")
+	apiToken := os.ExpandEnv("$BOT_DETERRENT_API_TOKEN")
 	if apiToken == "" {
-		panic(errors.New("can't start the app, the CAPTCHA_API_TOKEN environment variable is required"))
+		panic(errors.New("can't start the app, the BOT_DETERRENT_API_TOKEN environment variable is required"))
 	}
 
 	var err error
-	captchaAPIURL, err = url.Parse("http://localhost:2370")
+	powAPIURL, err = url.Parse("http://localhost:2370")
 	if err != nil {
-		panic(errors.New("can't start the app because can't parse captchaAPIURL"))
+		panic(errors.New("can't start the app because can't parse powAPIURL"))
 	}
 
-	err = loadCaptchaChallenges(apiToken)
+	err = loadChallenges(apiToken)
 	if err != nil {
-		panic(errors.Wrap(err, "can't start the app because could not loadCaptchaChallenges():"))
+		panic(errors.Wrap(err, "can't start the app because could not loadChallenges():"))
 	}
 
-	_, err = ioutil.ReadFile("index.html")
+	_, err = os.ReadFile("index.html")
 	if err != nil {
 		panic(errors.Wrap(err, "can't start the app because can't open the template file. Are you in the right directory? "))
 	}
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../static/"))))
 
 	http.HandleFunc("/", func(responseWriter http.ResponseWriter, request *http.Request) {
 
 		// The user submitted a POST request, attempting to add a new item to the list
 		if request.Method == "POST" {
 
-			// Ask the captcha server if the user's proof of work result is legit,
+			// Ask the bot deterrent server if the user's proof of work result is legit,
 			// and if not, return HTTP 400 Bad Request
 			err := request.ParseForm()
 			if err == nil {
-				err = validateCaptcha(apiToken, request.Form.Get("challenge"), request.Form.Get("nonce"))
+				err = validatePow(apiToken, request.Form.Get("challenge"), request.Form.Get("nonce"))
 			}
 
 			if err != nil {
@@ -76,29 +78,32 @@ func main() {
 
 			// Validation passed, add the user's new item to the list
 			items = append(items, request.Form.Get("item"))
+
+			http.Redirect(responseWriter, request, "/", http.StatusFound)
+			return
 		}
 
 		// if it looks like we will run out of challenges soon, then kick off a goroutine to go get more in the background
 		// note that in a real application in production, you would want to use a lock or mutex to ensure that
 		// this only happens once if lots of requests come in at the same time
-		if len(captchaChallenges) > 0 && len(captchaChallenges) < 5 {
-			go loadCaptchaChallenges(apiToken)
+		if len(powChallenges) > 0 && len(powChallenges) < 5 {
+			go loadChallenges(apiToken)
 		}
 
 		// if we somehow completely ran out of challenges, load more synchronously
-		if captchaChallenges == nil || len(captchaChallenges) == 0 {
-			err = loadCaptchaChallenges(apiToken)
+		if len(powChallenges) == 0 {
+			err = loadChallenges(apiToken)
 			if err != nil {
-				log.Printf("loading captcha challenges failed: %v", err)
+				log.Printf("loading bot deterrent challenges failed: %v", err)
 				responseWriter.WriteHeader(500)
-				responseWriter.Write([]byte("captcha api error"))
+				responseWriter.Write([]byte("bot deterrent api error"))
 				return
 			}
 		}
 
 		// This gets & consumes the next challenge from the begining of the slice
-		challenge := captchaChallenges[0]
-		captchaChallenges = captchaChallenges[1:]
+		challenge := powChallenges[0]
+		powChallenges = powChallenges[1:]
 
 		// render the page HTML & output the result to the web browser
 		htmlBytes, err := renderPageTemplate(challenge)
@@ -135,13 +140,13 @@ func renderPageTemplate(challenge string) ([]byte, error) {
 	// constructing an instance of an anonymous struct type to contain all the data
 	// that we need to pass to the template
 	pageData := struct {
-		Challenge  string
-		Items      []string
-		CaptchaURL string
+		Challenge string
+		Items     []string
+		PowAPIURL string
 	}{
-		Challenge:  challenge,
-		Items:      items,
-		CaptchaURL: captchaAPIURL.String(),
+		Challenge: challenge,
+		Items:     items,
+		PowAPIURL: powAPIURL.String(),
 	}
 	var outputBuffer bytes.Buffer
 	err = pageTemplate.Execute(&outputBuffer, pageData)
@@ -152,25 +157,25 @@ func renderPageTemplate(challenge string) ([]byte, error) {
 	return outputBuffer.Bytes(), nil
 }
 
-func loadCaptchaChallenges(apiToken string) error {
+func loadChallenges(apiToken string) error {
 
 	query := url.Values{}
-	query.Add("difficultyLevel", strconv.Itoa(captchaDifficultyLevel))
+	query.Add("difficultyLevel", strconv.Itoa(powDifficultyLevel))
 
 	loadURL := url.URL{
-		Scheme:   captchaAPIURL.Scheme,
-		Host:     captchaAPIURL.Host,
-		Path:     filepath.Join(captchaAPIURL.Path, "GetChallenges"),
+		Scheme:   powAPIURL.Scheme,
+		Host:     powAPIURL.Host,
+		Path:     filepath.Join(powAPIURL.Path, "GetChallenges"),
 		RawQuery: query.Encode(),
 	}
 
-	captchaRequest, err := http.NewRequest("POST", loadURL.String(), nil)
-	captchaRequest.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
+	request, err := http.NewRequest("POST", loadURL.String(), nil)
+	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
 	if err != nil {
 		return err
 	}
 
-	response, err := httpClient.Do(captchaRequest)
+	response, err := httpClient.Do(request)
 	if err != nil {
 		return err
 	}
@@ -182,48 +187,54 @@ func loadCaptchaChallenges(apiToken string) error {
 
 	if response.StatusCode != 200 {
 		return fmt.Errorf(
-			"load proof of work captcha challenges api returned http %d: %s",
+			"load proof of work bot deterrent challenges api returned http %d: %s",
 			response.StatusCode, string(responseBytes),
 		)
 	}
 
-	err = json.Unmarshal(responseBytes, &captchaChallenges)
+	err = json.Unmarshal(responseBytes, &powChallenges)
 	if err != nil {
 		return err
 	}
 
-	if len(captchaChallenges) == 0 {
-		return errors.New("proof of work captcha challenges api returned empty array")
+	if len(powChallenges) == 0 {
+		return errors.New("proof of work bot deterrent challenges api returned empty array")
 	}
 
 	return nil
 }
 
-func validateCaptcha(apiToken, challenge, nonce string) error {
+func validatePow(apiToken, challenge, nonce string) error {
 	query := url.Values{}
 	query.Add("challenge", challenge)
 	query.Add("nonce", nonce)
 
 	verifyURL := url.URL{
-		Scheme:   captchaAPIURL.Scheme,
-		Host:     captchaAPIURL.Host,
-		Path:     filepath.Join(captchaAPIURL.Path, "Verify"),
+		Scheme:   powAPIURL.Scheme,
+		Host:     powAPIURL.Host,
+		Path:     filepath.Join(powAPIURL.Path, "Verify"),
 		RawQuery: query.Encode(),
 	}
 
-	captchaRequest, err := http.NewRequest("POST", verifyURL.String(), nil)
-	captchaRequest.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
+	request, err := http.NewRequest("POST", verifyURL.String(), nil)
+	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
 	if err != nil {
 		return err
 	}
 
-	response, err := httpClient.Do(captchaRequest)
+	response, err := httpClient.Do(request)
 	if err != nil {
 		return err
 	}
 
 	if response.StatusCode != 200 {
-		return errors.New("proof of work captcha validation failed")
+		bodyString := "http read error"
+		bytez, err := io.ReadAll(response.Body)
+		if err == nil {
+			bodyString = string(bytez)
+		}
+		log.Printf("validation failed: HTTP %d: %s\n", response.StatusCode, bodyString)
+		return errors.New("PoW bot deterrent validation failed")
 	}
 	return nil
 }

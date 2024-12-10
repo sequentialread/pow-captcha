@@ -17,25 +17,25 @@ sed -E 's/GOARCH=/GOARCH=amd64/' -i dockerbuild/Dockerfile-amd64
 sed -E 's/GOARCH=/GOARCH=arm/'   -i dockerbuild/Dockerfile-arm
 sed -E 's/GOARCH=/GOARCH=arm64/' -i dockerbuild/Dockerfile-arm64
 
-docker build -f dockerbuild/Dockerfile-amd64 -t sequentialread/pow-captcha:$VERSION-amd64 .
-docker build -f dockerbuild/Dockerfile-arm   -t sequentialread/pow-captcha:$VERSION-arm .
-docker build -f dockerbuild/Dockerfile-arm64 -t sequentialread/pow-captcha:$VERSION-arm64 .
+docker build -f dockerbuild/Dockerfile-amd64 -t sequentialread/pow-bot-deterrent:$VERSION-amd64 .
+docker build -f dockerbuild/Dockerfile-arm   -t sequentialread/pow-bot-deterrent:$VERSION-arm .
+docker build -f dockerbuild/Dockerfile-arm64 -t sequentialread/pow-bot-deterrent:$VERSION-arm64 .
 
-docker push sequentialread/pow-captcha:$VERSION-amd64
-docker push sequentialread/pow-captcha:$VERSION-arm
-docker push sequentialread/pow-captcha:$VERSION-arm64
+docker push sequentialread/pow-bot-deterrent:$VERSION-amd64
+docker push sequentialread/pow-bot-deterrent:$VERSION-arm
+docker push sequentialread/pow-bot-deterrent:$VERSION-arm64
 
 export DOCKER_CLI_EXPERIMENTAL=enabled
 
-docker manifest create  sequentialread/pow-captcha:$VERSION \
-  sequentialread/pow-captcha:$VERSION-amd64 \
-  sequentialread/pow-captcha:$VERSION-arm \
-  sequentialread/pow-captcha:$VERSION-arm64 
+docker manifest create  sequentialread/pow-bot-deterrent:$VERSION \
+  sequentialread/pow-bot-deterrent:$VERSION-amd64 \
+  sequentialread/pow-bot-deterrent:$VERSION-arm \
+  sequentialread/pow-bot-deterrent:$VERSION-arm64 
 
-docker manifest annotate --arch amd64 sequentialread/pow-captcha:$VERSION sequentialread/pow-captcha:$VERSION-amd64
-docker manifest annotate --arch arm sequentialread/pow-captcha:$VERSION sequentialread/pow-captcha:$VERSION-arm
-docker manifest annotate --arch arm64 sequentialread/pow-captcha:$VERSION sequentialread/pow-captcha:$VERSION-arm64
+docker manifest annotate --arch amd64 sequentialread/pow-bot-deterrent:$VERSION sequentialread/pow-bot-deterrent:$VERSION-amd64
+docker manifest annotate --arch arm sequentialread/pow-bot-deterrent:$VERSION sequentialread/pow-bot-deterrent:$VERSION-arm
+docker manifest annotate --arch arm64 sequentialread/pow-bot-deterrent:$VERSION sequentialread/pow-bot-deterrent:$VERSION-arm64
 
-docker manifest push sequentialread/pow-captcha:$VERSION
+docker manifest push sequentialread/pow-bot-deterrent:$VERSION
 
 rm -rf dockerbuild || true

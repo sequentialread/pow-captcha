@@ -1,4 +1,4 @@
-module git.sequentialread.com/forest/pow-captcha
+module git.sequentialread.com/forest/pow-bot-deterrent
 
 go 1.16
 

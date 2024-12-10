@@ -1,5 +1,5 @@
 
 wasm_build/node_modules
 wasm_build/scrypt-wasm
-PoW_Captcha_API_Tokens/*
-!PoW_Captcha_API_Tokens/README.md
+PoW_Bot_Deterrent_API_Tokens/*
+!PoW_Bot_Deterrent_API_Tokens/README.md
