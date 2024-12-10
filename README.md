@@ -521,12 +521,15 @@ I measured the performance of the application with and without WebWorker / WebAs
 
 I tried two different implementations of the scrypt hash function, one from the [Stanford Javascript Crypto Library (sjcl)](https://github.com/bitwiseshiftleft/sjcl) and the WASM one from [github.com/MyEtherWallet/scrypt-wasm](https://github.com/MyEtherWallet/scrypt-wasm).
 
-| hardware | sjcl,single thread | sjcl,multi-thread | WASM,multi-thread |
-| :------------- | :------------- | :----------: | -----------: |
-| Lenovo T480s | 1-2 h/s | ~5 h/s  | ~70 h/s  |
-| Motorolla G7  | not tested | not tested | ~12 h/s |
-| Macbook Air 2018  | not tested | not tested | ~ 32h/s |
-| Google Pixel 3a | not tested | not tested | ~ 24h/s |
+| hardware | scryptCPUAndMemoryCost | sjcl,single thread | sjcl,multi-thread | WASM,multi-thread |
+| :------------- | :------------- | :------------- | :----------: | -----------: |
+| Lenovo T480s | 4096 | 1-2 h/s | ~5 h/s  | ~70 h/s  |
+| Motorolla G7  | 4096 | not tested | not tested | ~12 h/s |
+| Macbook Air 2018  | 4096 | not tested | not tested | ~ 32h/s |
+| Google Pixel 3a | 4096 | not tested | not tested | ~ 24h/s |
+| Framework Laptop AMD 7640U | 4096 | not tested | not tested | ~ 243h/s |
+| Framework Laptop AMD 7640U | 16384 | not tested | not tested | ~ 57h/s |
+| Motorolla One 5G Ace | 16384 | not tested | not tested | ~ 35h/s |
 
 I had some trouble getting the WASM module loaded properly inside the WebWorkers. In my production environment, the web application server and the Bot Deterrent server are running on separate subdomains, so I was getting cross-origin security violation issues. 
 
