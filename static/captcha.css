@@ -1,4 +1,4 @@
-.sqr-captcha {
+.pow-botdeterrent {
   background-color: #ddd;
   border: 1px solid #9359fa;
   border-radius: 1em;
@@ -10,7 +10,7 @@
   min-width: 37em;
 }
 
-.sqr-captcha-link {
+.pow-botdeterrent-link {
   color: #452775;
   font-weight: bold;
   text-decoration: underline;
@@ -19,28 +19,28 @@
 }
 
 @media screen and (max-width: 410px) {
-  .sqr-captcha {
+  .pow-botdeterrent {
     min-width: 25em;
   }
-  .sqr-captcha-icon {
+  .pow-botdeterrent-icon {
     height: 3em;
   }
 }
 
 @media screen and (max-width: 380px) {
-	.sqr-captcha-link span {
+	.pow-botdeterrent-link span {
 		display: none;
   }
 }
 
-.sqr-captcha-link:hover,
-.sqr-captcha-link:active,
-.sqr-captcha-link:visited {
+.pow-botdeterrent-link:hover,
+.pow-botdeterrent-link:active,
+.pow-botdeterrent-link:visited {
   color: #452775;
 }
 
 
-.sqr-captcha-row {
+.pow-botdeterrent-row {
   display: inline-flex;
   flex-direction: row;
   align-content: center;
@@ -48,14 +48,14 @@
   justify-content: space-between;
 }
 
-.sqr-captcha-icon-container {
+.pow-botdeterrent-icon-container {
   margin-left: 1.5em;
   margin-top: 0.2em;
   margin-bottom: -2em;
   margin-right: 0.2em;
 }
 
-.sqr-captcha-best-hash {
+.pow-botdeterrent-best-hash {
   font-family: monospace;
   background: #585a29;
   color: #f6ff72;
@@ -70,17 +70,17 @@
   float: right;
 }
 
-.sqr-captcha-best-hash-done {
+.pow-botdeterrent-best-hash-done {
   background: #3b6262;
   color: #53f65d;
 }
 
-.sqr-captcha-description {
+.pow-botdeterrent-description {
   margin-top: 1em;
   font-size: 1em;
 }
 
-.sqr-captcha-progress-bar-container {
+.pow-botdeterrent-progress-bar-container {
   border-radius: 1em;
   background: #444;
   height: 1em;
@@ -90,7 +90,7 @@
   
 }
 
-.sqr-captcha-progress-bar {
+.pow-botdeterrent-progress-bar {
   background: #f6ff72;
   height: 1em;
   width: 0;
@@ -98,15 +98,15 @@
   transition: width 0.5s ease-in-out;
 }
 
-.sqr-captcha-icon {
+.pow-botdeterrent-icon {
   height: 4em;
 }
 
-.sqr-captcha-hidden {
+.pow-botdeterrent-hidden {
   display: none;
 }
 
-.sqr-checkmark-icon-checkmark {
+.pow-checkmark-icon-checkmark {
   fill:none;
   stroke: #31bd82;
   stroke-width: 6em;
@@ -114,11 +114,11 @@
   stroke-dashoffset: 74em;
   stroke-linecap: round;
   stroke-linejoin: round;
-  animation: 0.8s normal forwards ease-in-out sqr-draw-checkmark;
+  animation: 0.8s normal forwards ease-in-out pow-draw-checkmark;
   animation-play-state: inherit;
 }
 
-.sqr-checkmark-icon-border {
+.pow-checkmark-icon-border {
   fill:none;
   stroke: #aaa;
   stroke-width: 3em;
@@ -126,23 +126,23 @@
   stroke-dashoffset: 110em;
   stroke-linecap: round;
   stroke-linejoin: round;
-  animation: 0.8s normal forwards ease-in-out sqr-draw-checkmark-border;
+  animation: 0.8s normal forwards ease-in-out pow-draw-checkmark-border;
   animation-play-state: inherit;
 }
 
-.sqr-gears-icon-gear-large {
+.pow-gears-icon-gear-large {
   fill: #9359fa;
-  animation: 4s linear infinite sqr-spinning-gears-large;
+  animation: 4s linear infinite pow-spinning-gears-large;
   animation-play-state: running;
 }
-.sqr-gears-icon-gear-small {
+.pow-gears-icon-gear-small {
   fill: #9359fa;
-  animation: 4s linear infinite sqr-spinning-gears-small;
+  animation: 4s linear infinite pow-spinning-gears-small;
   animation-play-state: running;
 }
 
 
-@keyframes sqr-draw-checkmark-border {
+@keyframes pow-draw-checkmark-border {
   0% {
     stroke-dashoffset: 110em; 
   }
@@ -151,7 +151,7 @@
   }
 }
 
-@keyframes sqr-draw-checkmark {
+@keyframes pow-draw-checkmark {
   0% {
     stroke-dashoffset: 74em;
   }
@@ -160,7 +160,7 @@
   }
 }
 
-@keyframes sqr-spinning-gears-small {
+@keyframes pow-spinning-gears-small {
   0% {
     transform: translate(161px, 161px) rotate(0deg) translate(-161px,-161px);
   }
@@ -169,7 +169,7 @@
   }
 }
 
-@keyframes sqr-spinning-gears-large {
+@keyframes pow-spinning-gears-large {
   0% {
     transform: translate(73px, 73px) rotate(360deg) translate(-73px,-73px);
   }

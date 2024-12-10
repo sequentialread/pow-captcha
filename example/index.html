@@ -5,7 +5,7 @@
   <title>📋 Todo List</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    .captcha-container {
+    .botdeterrent-container {
       margin-top: 1em;
       font-size: 10px;
     }
@@ -32,22 +32,22 @@
           <input type="hidden" name="challenge" value="{{ .Challenge }}" />
           <input type="hidden" name="nonce" />
           <input type="submit" disabled="true" value="Add" />
-          <div class="captcha-container" 
-              data-sqr-captcha-url="http://localhost:8080/" 
-              data-sqr-captcha-challenge="{{ .Challenge }}" 
-              data-sqr-captcha-callback="myCaptchaCallback">
+          <div class="botdeterrent-container" 
+              data-pow-bot-deterrent-url="http://localhost:8080/" 
+              data-pow-bot-deterrent-challenge="{{ .Challenge }}" 
+              data-pow-bot-deterrent-callback="myPowCallback">
          </div>
         </form>
 
       </li>
   </ol>
   <script>
-    window.myCaptchaCallback = (nonce) => {
+    window.myPowCallback = (nonce) => {
       document.querySelector("form input[name='nonce']").value = nonce;
       document.querySelector("form input[type='submit']").disabled = false;
     };
   </script>
-  <script src="/static/captcha.js"></script>
+  <script src="/static/botdeterrent.js"></script>
   <!-- <script src='./static/scrypt_wasm.js'></script>
   <script>
     const { scrypt } = wasm_bindgen;

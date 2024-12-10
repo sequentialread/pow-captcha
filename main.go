@@ -49,39 +49,39 @@ func main() {
 	deprecateAfterBatches := 10
 	portNumber := 2370
 	scryptCPUAndMemoryCost := 4096
-	batchSizeEnv := os.ExpandEnv("$POW_CAPTCHA_BATCH_SIZE")
-	deprecateAfterBatchesEnv := os.ExpandEnv("$POW_CAPTCHA_DEPRECATE_AFTER_BATCHES")
-	portNumberEnv := os.ExpandEnv("$POW_CAPTCHA_LISTEN_PORT")
-	scryptCPUAndMemoryCostEnv := os.ExpandEnv("$POW_CAPTCHA_SCRYPT_CPU_AND_MEMORY_COST")
+	batchSizeEnv := os.ExpandEnv("$POW_BOT_DETERRENT_BATCH_SIZE")
+	deprecateAfterBatchesEnv := os.ExpandEnv("$POW_BOT_DETERRENT_DEPRECATE_AFTER_BATCHES")
+	portNumberEnv := os.ExpandEnv("$POW_BOT_DETERRENT_LISTEN_PORT")
+	scryptCPUAndMemoryCostEnv := os.ExpandEnv("$POW_BOT_DETERRENT_SCRYPT_CPU_AND_MEMORY_COST")
 	if batchSizeEnv != "" {
 		batchSize, err = strconv.Atoi(batchSizeEnv)
 		if err != nil {
-			panic(errors.Wrapf(err, "can't start the app because the POW_CAPTCHA_BATCH_SIZE '%s' can't be converted to an integer", batchSizeEnv))
+			panic(errors.Wrapf(err, "can't start the app because the POW_BOT_DETERRENT_BATCH_SIZE '%s' can't be converted to an integer", batchSizeEnv))
 		}
 	}
 	if deprecateAfterBatchesEnv != "" {
 		deprecateAfterBatches, err = strconv.Atoi(deprecateAfterBatchesEnv)
 		if err != nil {
-			panic(errors.Wrapf(err, "can't start the app because the POW_CAPTCHA_DEPRECATE_AFTER_BATCHES '%s' can't be converted to an integer", deprecateAfterBatchesEnv))
+			panic(errors.Wrapf(err, "can't start the app because the POW_BOT_DETERRENT_DEPRECATE_AFTER_BATCHES '%s' can't be converted to an integer", deprecateAfterBatchesEnv))
 		}
 	}
 	if portNumberEnv != "" {
 		portNumber, err = strconv.Atoi(portNumberEnv)
 		if err != nil {
-			panic(errors.Wrapf(err, "can't start the app because the POW_CAPTCHA_LISTEN_PORT '%s' can't be converted to an integer", portNumberEnv))
+			panic(errors.Wrapf(err, "can't start the app because the POW_BOT_DETERRENT_LISTEN_PORT '%s' can't be converted to an integer", portNumberEnv))
 		}
 	}
 	if scryptCPUAndMemoryCostEnv != "" {
 		scryptCPUAndMemoryCost, err = strconv.Atoi(scryptCPUAndMemoryCostEnv)
 		if err != nil {
-			panic(errors.Wrapf(err, "can't start the app because the POW_CAPTCHA_SCRYPT_CPU_AND_MEMORY_COST '%s' can't be converted to an integer", scryptCPUAndMemoryCostEnv))
+			panic(errors.Wrapf(err, "can't start the app because the POW_BOT_DETERRENT_SCRYPT_CPU_AND_MEMORY_COST '%s' can't be converted to an integer", scryptCPUAndMemoryCostEnv))
 		}
 	}
 
 	apiTokensFolder := locateAPITokensFolder()
-	adminAPIToken := os.ExpandEnv("$POW_CAPTCHA_ADMIN_API_TOKEN")
+	adminAPIToken := os.ExpandEnv("$POW_BOT_DETERRENT_ADMIN_API_TOKEN")
 	if adminAPIToken == "" {
-		panic(errors.New("can't start the app, the POW_CAPTCHA_ADMIN_API_TOKEN environment variable is required"))
+		panic(errors.New("can't start the app, the POW_BOT_DETERRENT_ADMIN_API_TOKEN environment variable is required"))
 	}
 
 	scryptParameters := ScryptParameters{
@@ -416,7 +416,7 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	log.Printf("💥  PoW! Captcha server listening on port %d", portNumber)
+	log.Printf("💥  PoW! Bot Deterrent server listening on port %d", portNumber)
 
 	err = http.ListenAndServe(fmt.Sprintf(":%d", portNumber), nil)
 
@@ -444,8 +444,8 @@ func locateAPITokensFolder() string {
 		log.Fatalf("locateAPITokensFolder(): can't getCurrentExecDir(): %v", err)
 	}
 
-	nextToExecutable := filepath.Join(executableDirectory, "PoW_Captcha_API_Tokens")
-	inWorkingDirectory := filepath.Join(workingDirectory, "PoW_Captcha_API_Tokens")
+	nextToExecutable := filepath.Join(executableDirectory, "PoW_Bot_Deterrent_API_Tokens")
+	inWorkingDirectory := filepath.Join(workingDirectory, "PoW_Bot_Deterrent_API_Tokens")
 
 	nextToExecutableStat, err := os.Stat(nextToExecutable)
 	foundKeysNextToExecutable := err == nil && nextToExecutableStat.IsDir()
@@ -453,7 +453,7 @@ func locateAPITokensFolder() string {
 	foundKeysInWorkingDirectory := err == nil && inWorkingDirectoryStat.IsDir()
 	if foundKeysNextToExecutable && foundKeysInWorkingDirectory && workingDirectory != executableDirectory {
 		log.Fatalf(`locateAPITokensFolder(): Something went wrong with your installation, 
-			I found two PoW_Captcha_API_Tokens folders and I'm not sure which one to use.
+			I found two PoW_Bot_Deterrent_API_Tokens folders and I'm not sure which one to use.
 			One of them is located at %s
 			and the other is at %s`, inWorkingDirectory, nextToExecutable)
 	}
@@ -463,7 +463,7 @@ func locateAPITokensFolder() string {
 		return nextToExecutable
 	}
 
-	log.Fatalf(`locateAPITokensFolder(): I didn't find a PoW_Captcha_API_Tokens folder 
+	log.Fatalf(`locateAPITokensFolder(): I didn't find a PoW_Bot_Deterrent_API_Tokens folder 
 		in the current working directory (in %s) or next to the executable (in %s)`, workingDirectory, executableDirectory)
 
 	return ""

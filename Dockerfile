@@ -9,12 +9,13 @@ RUN apk add --update --no-cache ca-certificates git
 COPY go.mod go.mod
 COPY go.sum go.sum
 COPY main.go main.go
-RUN  go get && go build -v $GO_BUILD_ARGS -o /build/sequentialread-pow-captcha .
+RUN  go get && go build -v $GO_BUILD_ARGS -o /build/pow-bot-deterrent .
 
 FROM alpine
 WORKDIR /app
-COPY --from=build /build/sequentialread-pow-captcha /app/sequentialread-pow-captcha
+COPY --from=build /build/pow-bot-deterrent /app/pow-bot-deterrent
 COPY static /app/static
-COPY PoW_Captcha_API_Tokens /app/PoW_Captcha_API_Tokens
-RUN chmod +x /app/sequentialread-pow-captcha
-ENTRYPOINT ["/app/sequentialread-pow-captcha"]
+COPY PoW_Bot_Deterrent_API_Tokens /app/PoW_Bot_Deterrent_API_Tokens
+RUN chmod +x /app/pow-bot-deterrent
+ENTRYPOINT ["/app/pow-bot-deterrent"]
+
